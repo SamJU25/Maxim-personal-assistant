@@ -857,10 +857,15 @@
   - Added REST endpoint `GET /api/audio/status` reporting operational metrics, discovered models, and CUDA acceleration for both ASR and TTS.
   - Updated `POST /api/voice/transcribe` with optional `model` parameter.
   - Tested: 7/7 tests passing in [`backend/tests/test_audio_pipeline.py`](file:///f:/MAXIM%20V2/backend/tests/test_audio_pipeline.py).
+- **One-Click Localhost Launchers**:
+  - Implemented [`start_maxim.bat`](file:///f:/MAXIM%20V2/start_maxim.bat): Native batch launcher with colored output, virtualenv/npm dependency validation, port 8000 & 5173 background management, `/api/health` polling, and automatic browser launch.
+  - Implemented [`start_maxim.exe`](file:///f:/MAXIM%20V2/start_maxim.exe): Lightweight (9.7KB) compiled native Windows C# executable launcher (`scripts/launcher.cs`) with automated process-tree cleanup.
+  - Implemented [`stop_maxim.bat`](file:///f:/MAXIM%20V2/stop_maxim.bat): Clean shutdown script terminating processes on ports 8000 and 5173.
 - **Verification Receipts**:
   - 394/394 backend Pytest unit tests passing (100% Green, 0 errors).
   - 24/24 frontend Vitest tests passing (100% Green).
   - Frontend production build (`tsc && vite build`) passing cleanly in 2.84s.
+  - Pushed to remote: `https://github.com/SamJU25/Maxim-personal-assistant.git`.
 
 ---
 
