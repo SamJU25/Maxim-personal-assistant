@@ -180,20 +180,32 @@ Drop your `.gguf` weights into the `models/` directory:
 
 ### Running MaxIM
 
-#### 1. Launch Backend API
+#### ⚡ Option A: One-Click Launcher (Recommended)
+Simply double-click either:
+- **`start_maxim.bat`** (Batch launcher with visual colored terminal)
+- **`start_maxim.exe`** (Native standalone Windows launcher)
+
+The launcher automatically:
+1. Validates Python virtualenv and Node dependencies (auto-installs if missing).
+2. Boots the Backend FastAPI server on `http://127.0.0.1:8000`.
+3. Boots the React 19 Frontend on `http://localhost:5173`.
+4. Performs a health check ping to ensure all services are ready.
+5. Automatically opens your default web browser directly to `http://localhost:5173`.
+6. To stop all services, press `[ENTER]` / `[Q]` in the launcher or run `stop_maxim.bat`.
+
+---
+
+#### 🛠️ Option B: Manual Command-Line Launch
 ```bash
+# Terminal 1 - Backend:
 cd backend
 .\.venv\Scripts\Activate.ps1
 python -m uvicorn server:app --host 127.0.0.1 --port 8000 --reload
-```
-API docs available at: `http://127.0.0.1:8000/docs`
 
-#### 2. Launch Frontend UI
-```bash
+# Terminal 2 - Frontend:
 cd frontend
 npm run dev
 ```
-Open your browser to: `http://localhost:5173`
 
 ---
 
