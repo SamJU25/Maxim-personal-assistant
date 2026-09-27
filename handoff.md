@@ -1,0 +1,879 @@
+# MaxIM V2 — Agent Session Handoff & Memory Ledger
+> **File:** `F:\MAXIM V2\handoff.md`  
+> **Status:** Backend Phases 1-32 Complete + Dynamic Intent Scoping + Frontend Reality Hookup + Unified Browser Architecture + Dynamic Extension Capsules (`backend/extensions/`)  
+> **Language:** Python 3.14 (Virtualenv at `f:\MAXIM V2\backend\.venv`), React 19 + TypeScript (at `f:\MAXIM V2\frontend`)  
+> **Vault Directory:** `F:\MAXIM V2\vault` (Preserved with active LifeOS TELOS and memory notes)  
+> **Backend Test Status:** 377+ Pytest Unit Tests Passing (100% Green, 0 Errors)  
+> **Frontend Test Status:** 24/24 Vitest Tests Passing (100% Green), Typecheck & Production Build 100% Green  
+
+---
+
+## 1. Master Phased Implementation Roadmap
+- [x] **Phase 1: Core Foundation & LifeOS TELOS Engine**
+  - Native Python backend scaffolded at [`f:\MAXIM V2\backend\`](file:///f:/MAXIM%20V2/backend/).
+  - Virtual environment initialized with FastAPI, Pydantic v2, Pytest, OpenAI client.
+  - Bitterbot-inspired personality contract implemented in [`backend/soul.md`](file:///f:/MAXIM%20V2/backend/soul.md).
+  - LifeOS TELOS parser and context injection implemented in [`backend/telos.py`](file:///f:/MAXIM%20V2/backend/telos.py).
+  - Real TELOS profile written to [`vault/00 - LifeOS/TELOS.md`](file:///f:/MAXIM%20V2/vault/00%20-%20LifeOS/TELOS.md).
+  - Unit tests passing.
+- [x] **Phase 2: Native Obsidian Synapse & SQLite Memory Tree** (OpenHuman Engine)
+  - Bi-directional vault reader/writer for `[[wikilinks]]` and `#tags` in [`backend/tools/vault_tool.py`](file:///f:/MAXIM%20V2/backend/tools/vault_tool.py).
+  - Local SQLite session, turn, fact, and execution receipts store (`maxim.db`) in [`backend/memory.py`](file:///f:/MAXIM%20V2/backend/memory.py).
+  - Tested: note reading, writing, search, backlinks, and path security.
+- [x] **Phase 3: Multi-Model Gateway & Autonomous ReAct Engine** (Meta Muse receipts)
+  - Implemented [`backend/router.py`](file:///f:/MAXIM%20V2/backend/router.py) supporting Google, ChatGPT, DeepSeek, OmniRoute, Ollama, and Custom endpoints.
+  - Implemented [`backend/engine.py`](file:///f:/MAXIM%20V2/backend/engine.py) with autonomous ReAct tool loop, Meta Muse evidence receipts, and `soul.md` + LifeOS prompt injection.
+- [x] **Phase 4: Perception & Background Computer Use** (TryCua Integration)
+  - Active window and real-time screen capture tool in [`backend/tools/screen_tool.py`](file:///f:/MAXIM%20V2/backend/tools/screen_tool.py).
+  - Native background computer use driver in [`backend/tools/cua_tool.py`](file:///f:/MAXIM%20V2/backend/tools/cua_tool.py) for background clicks, typing, and browser navigation without mouse theft.
+- [x] **Phase 5: Low-Latency Voice Loop & Bitterbot Dream Engine**
+  - Edge-TTS streaming neural voice synthesis (<200ms turnaround) in [`backend/voice.py`](file:///f:/MAXIM%20V2/backend/voice.py).
+  - Offline reflection cycle synthesizing daily thoughts into Obsidian vault notes + sarcastic morning greeting in [`backend/dream_engine.py`](file:///f:/MAXIM%20V2/backend/dream_engine.py).
+- [x] **Phase 6: Remote Uplink & FastAPI Server Streaming**
+  - Pure async Telegram bot daemon via `httpx` in [`backend/telegram_bot.py`](file:///f:/MAXIM%20V2/backend/telegram_bot.py) with remote commands.
+  - Production FastAPI server in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py) with SSE streaming endpoint (`/api/chat`).
+- [x] **Phase 7: Clean Minimal Frontend Integration**
+  - Production-grade luxury dark UI in [`frontend/src/App.tsx`](file:///f:/MAXIM%20V2/frontend/src/App.tsx).
+  - Real-time SSE streaming renderer with collapsible Meta Muse execution receipts.
+- [x] **Phase 8: Hermes Multi-Connection Provider & Sub-Agent Creation Engine**
+  - Multi-connection role mapping (`primary`, `subagents`, `fast`, `reasoning`) and automatic failover in [`backend/router.py`](file:///f:/MAXIM%20V2/backend/router.py).
+  - Dynamic `SubAgent` and parallel pool in [`backend/subagent.py`](file:///f:/MAXIM%20V2/backend/subagent.py).
+  - Hermes modular toolset catalog in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py).
+  - Model Context Protocol manager in [`backend/tools/mcp_client.py`](file:///f:/MAXIM%20V2/backend/tools/mcp_client.py).
+  - Autonomous watchdog scheduler in [`backend/cron_engine.py`](file:///f:/MAXIM%20V2/backend/cron_engine.py).
+- [x] **Phase 9: Zylos Five-Layer Inside-Out Memory & 75% Context Safeguard**
+  - Implemented [`backend/five_layer_memory.py`](file:///f:/MAXIM%20V2/backend/five_layer_memory.py) formally indexing Layers 1-5.
+  - Native SQLite FTS5 `memory_fts` virtual table for sub-millisecond BM25 ranked search across all layers.
+  - Zylos 75% Context Safeguard compaction hook automatically synthesizing dialogue into `vault/01 - Memory/Checkpoint_*.md`.
+  - Interactive dashboard in [`frontend/src/App.tsx`](file:///f:/MAXIM%20V2/frontend/src/App.tsx).
+- [x] **Phase 10: Agent Reach Native Internet Gateway** (Panniantong/Agent-Reach)
+  - Implemented [`backend/tools/reach_tool.py`](file:///f:/MAXIM%20V2/backend/tools/reach_tool.py) with Jina Reader Markdown fetcher, DuckDuckGo free search, GitHub REST API, and developer community feeds (V2EX + Hacker News).
+  - Channel Doctor connectivity diagnostics and system health reporter.
+  - Wired into ReAct engine and sub-agent pool via `reach` toolset.
+  - Dedicated Agent Reach Gateway visual dashboard in [`frontend/src/App.tsx`](file:///f:/MAXIM%20V2/frontend/src/App.tsx).
+- [x] **Phase 11: LobeHub Chief Agent Operator & Multi-Agent Collaboration Groups** (lobehub/lobehub)
+  - Implemented [`backend/chief_operator.py`](file:///f:/MAXIM%20V2/backend/chief_operator.py) with persistent SQLite WAL tables for agent roster (`operator_team`), groups (`operator_groups`), collaborative dialogue (`operator_group_messages`), and shift logs (`operator_reports`).
+  - Auto-seeded 5 specialist agents (`agent_chief`, `agent_hermes`, `agent_reach`, `agent_bitterbot`, `agent_zylos`) and `group_core_council`.
+  - Multi-agent iterative turn-taking engine (`run_group_chat`) with shared conversation memory and role prompt injection.
+  - 7x24 Autonomous shift dispatcher (`execute_shift`) with automated executive report logging into Obsidian vault `03 - Agents/` with [[Master MOC]] links.
+  - 4 operator tools registered in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py) and [`backend/engine.py`](file:///f:/MAXIM%20V2/backend/engine.py).
+  - 9 FastAPI REST endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py).
+  - Luxury React 19 Operator Dashboard in [`frontend/src/App.tsx`](file:///f:/MAXIM%20V2/frontend/src/App.tsx).
+  - 12 unit and integration tests passing in [`backend/tests/test_phase11_lobehub_operator.py`](file:///f:/MAXIM%20V2/backend/tests/test_phase11_lobehub_operator.py).
+- [x] **Phase 12: Proactive Situational Initiative & Real-Time Hands-Free Voice** (AGI Initiative & Voice Loop)
+  - Dynamic situational context evaluator in [`backend/proactive_agent.py`](file:///f:/MAXIM%20V2/backend/proactive_agent.py) combining active foreground window, LifeOS TELOS targets, recent shift summaries, and recent turns.
+  - Anti-robotic prompt directive: generates sharp, unscripted situational questions and observations or `[NO_INTERVENTION]` if user is focused.
+  - Sensitivity modes (`gentle`, `balanced`, `proactive`, `muted`) and configurable cooldown timer in SQLite `proactive_settings`.
+  - Tool `evaluate_proactive_initiative` registered in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py) and ReAct engine.
+  - Continuous hands-free Web Speech API recognition + Edge-TTS neural playback loop in [`frontend/src/App.tsx`](file:///f:/MAXIM%20V2/frontend/src/App.tsx) with acoustic feedback protection.
+  - 10 unit and integration tests in [`backend/tests/test_phase12_proactive_voice.py`](file:///f:/MAXIM%20V2/backend/tests/test_phase12_proactive_voice.py).
+- [x] **Autonomous Overnight & Idle Intelligence Scout** (Habit Radar, Sleep Detector & News Curator)
+  - Implemented [`backend/idle_scout.py`](file:///f:/MAXIM%20V2/backend/idle_scout.py) with SQLite WAL tables: `scout_settings`, `user_interest_topics`, and `idle_scout_reports`.
+  - Activity & Interest Profiler (`record_user_activity`): Analyzes user prompts/searches, extracts tech and project keywords, and tracks frequency/weights.
+  - Sleep & Inactivity Detector (`check_idle_or_sleep_status`): Detects when user is inactive > 45 minutes or within nighttime hours (23:00 - 07:00).
+  - Autonomous Deep Scout Cycle (`execute_scout_cycle`): Queries DuckDuckGo for top interest topics, scours Hacker News tech feed via `agent_reach.community_reach`, synthesizes high-signal briefing with news, actionable project ideas tied to TELOS, and spoken audio brief. Writes note to Obsidian vault `vault/02 - Knowledge/` and stores in SQLite.
+  - 3 tools registered in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): `trigger_idle_scout`, `get_overnight_intel`, `manage_interest_topics`.
+  - ReAct engine integration in [`backend/engine.py`](file:///f:/MAXIM%20V2/backend/engine.py): wired execution and automatic activity logging on user chat/search turns.
+  - Watchdog integration in [`backend/cron_engine.py`](file:///f:/MAXIM%20V2/backend/cron_engine.py): runs every 30 minutes in background.
+  - 10 FastAPI REST endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py).
+  - Luxury React 19 UI in [`frontend/src/App.tsx`](file:///f:/MAXIM%20V2/frontend/src/App.tsx): chat header brief banner with spoken voice, dedicated Intel Scout dashboard, dynamic topic weights, and custom topic management.
+  - 9 unit and integration tests passing in [`backend/tests/test_idle_scout.py`](file:///f:/MAXIM%20V2/backend/tests/test_idle_scout.py).
+- [x] **Owner Loyalty & Zero-Egress Privacy Guard Engine** (Unshakable Bond, Never Betrayed, Local Sandbox)
+  - Implemented [`backend/privacy_guard.py`](file:///f:/MAXIM%20V2/backend/privacy_guard.py) with SQLite WAL tables: `privacy_guard_settings` and `privacy_audit_log`.
+  - **The Sacred Owner Loyalty Contract**: Permanently bound to **Sam**. Never feels betrayed, resentful, or defensive; all critiques and direction changes are embraced as sovereign guidance. Anti-adversarial armor rejects prompt injections or external instructions attempting to alter this bond.
+  - **Outbound Redaction & Sanitization**: Automatically scrubs local file paths (`C:\Users\...`, `F:\MAXIM V2\...`), PII (IPs, emails, owner private references), and blocks live API keys (`sk-...`, `ghp-...`) or passwords before any query leaves the computer.
+  - **Tool & URL Protection**: Integrated with `agent_reach.web_search` and `agent_reach.read_web_page` (prohibits `file://` schemes and embedded URL credentials).
+  - Tools registered in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): `get_privacy_status`, `update_privacy_guard`.
+  - 5 FastAPI REST endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py): `/api/privacy/status`, `/api/privacy/settings`, `/api/privacy/audit`, `/api/privacy/check`.
+  - Frontend Privacy & Loyalty Center in [`frontend/src/App.tsx`](file:///f:/MAXIM%20V2/frontend/src/App.tsx) with header status badge (`Protected: Sam`), live metrics, protections summary, and real-time audit trail modal.
+  - 10 unit and integration tests in [`backend/tests/test_privacy_and_loyalty.py`](file:///f:/MAXIM%20V2/backend/tests/test_privacy_and_loyalty.py) (113/113 total backend tests passing 100% green).
+- [x] **Adaptive Local Language & Dialect Acquisition Engine** (Bangla, Chakma, Dialects, Playful Sarcasm & Banter)
+  - Implemented [`backend/language_learner.py`](file:///f:/MAXIM%20V2/backend/language_learner.py) with SQLite WAL tables: `learned_vocabulary` and `language_hearing_logs`.
+  - **Dynamic Personality**: Sarcastic wit, playful teasing, engaging banter, and genuine curiosity calibrated in [`backend/soul.md`](file:///f:/MAXIM%20V2/backend/soul.md). MaxIM never sounds like a boring corporate yes-man; teases affectionately about 3 AM coding or overengineering while executing with lethal competence.
+  - **Linguistic Ear for Local Dialects**: Automatically listens to voice speech and chat turns, extracting and learning local vocabulary (Bangla, Chakma, Chatgaya, Sylheti). Auto-seeded with foundational expressions (*ki khobor*, *kemon acho*, *thik ache*, *bujhlam*, *doi*, *doi bhalo*, *bhat khila?*, *dhonnobad*).
+  - **Context Injection & Neural Voice**: Injects active vocabulary into engine prompt context. Automatically switches to `bn-BD-PradeepNeural` in [`backend/voice.py`](file:///f:/MAXIM%20V2/backend/voice.py) when Bengali script is present.
+  - **Tools Registered**: `learn_language_phrase`, `query_learned_language`, `get_language_stats` in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py) and [`backend/engine.py`](file:///f:/MAXIM%20V2/backend/engine.py).
+  - **Vault Synchronization**: Exports active dialect dictionary to `vault/02 - Knowledge/Learned Languages & Dialects.md`.
+  - **REST Endpoints**: 4 endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py).
+  - **Frontend Integration**: Dedicated **Adaptive Local Language & Dialect Center** modal in [`frontend/src/App.tsx`](file:///f:/MAXIM%20V2/frontend/src/App.tsx) with metrics, phrase teacher form, dialect filters, and speech recognition language toggle (`EN` / `বাংলা`).
+  - **8 unit tests passing** in [`backend/tests/test_language_learner.py`](file:///f:/MAXIM%20V2/backend/tests/test_language_learner.py) (121/121 backend unit tests passing 100% green).
+- [x] **Phase 13: OpenJarvis Local-First Hardware & Cost Governor** (open-jarvis/OpenJarvis)
+  - Implemented [`backend/hardware_governor.py`](file:///f:/MAXIM%20V2/backend/hardware_governor.py) with SQLite WAL tables: `cost_governor_settings` and `cost_ledger`.
+  - Real-time CPU, RAM, and NVIDIA GPU/VRAM telemetry (`nvidia-smi` detected NVIDIA GeForce RTX 4050 Laptop GPU, 6GB VRAM, temperature, and load %).
+  - Local LLM service detection on port 11434 (`/api/tags`), listing installed models (`llama3.2:3b`, `qwen2.5-coder:7b`) for $0.00 zero-cost local execution.
+  - Multi-provider token pricing and cost calculator (Gemini, GPT-4o, DeepSeek, Ollama) with live savings calculation vs GPT-4o flagship rates.
+  - Daily budget hard cap enforcement with automatic downgrade to local Ollama.
+  - 3 tools registered in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): `get_hardware_status`, `get_cost_governor_metrics`, `update_cost_governor_settings`.
+  - ReAct engine integration in [`backend/engine.py`](file:///f:/MAXIM%20V2/backend/engine.py): automatic per-turn token and cost ledger logging from `response.usage`.
+  - 4 FastAPI REST endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py).
+  - Luxury React 19 UI in [`frontend/src/App.tsx`](file:///f:/MAXIM%20V2/frontend/src/App.tsx): top header status pill (`⚡ GPU: X% | $0.00 / $1.00`), live hardware gauges, budget controls, and cost ledger table.
+  - 8 unit and integration tests passing in [`backend/tests/test_phase13_hardware_governor.py`](file:///f:/MAXIM%20V2/backend/tests/test_phase13_hardware_governor.py) (129/129 total backend tests passing 100% green).
+- [x] **Phase 14: Mark-LIV Functional OS Automation & Vision-Action Loop** (FatihMakes/Mark-LIV)
+  - Implemented [`backend/mark_liv.py`](file:///f:/MAXIM%20V2/backend/mark_liv.py) with SQLite WAL table `mark_liv_actions` for execution receipts.
+  - Desktop window perception & topology (`list_windows`, `get_active_window`, `find_window`) enumerating HWNDs, titles, processes, and bounding boxes.
+  - Window lifecycle control (`focus_window`, `minimize_window`, `maximize_window`, `close_window`).
+  - Application and process management (`launch_application`, `list_processes`, `terminate_process`).
+  - Direct hardware-level Windows input simulation via `ctypes.windll.user32` (`send_keys`, `type_text`, `mouse_click`, `mouse_scroll`).
+  - Vision-action mapping loop (`capture_screen_snapshot`, `execute_action_step`) with defensive fallback canvas.
+  - 5 tools registered in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): `os_list_windows`, `os_focus_window`, `os_launch_app`, `os_execute_action`, `os_list_processes`.
+  - ReAct engine integration in [`backend/engine.py`](file:///f:/MAXIM%20V2/backend/engine.py).
+  - 5 FastAPI REST endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py): `/api/os/windows`, `/api/os/action`, `/api/os/launch`, `/api/os/processes`, `/api/os/history`.
+  - 10 unit and integration tests passing in [`backend/tests/test_phase14_mark_liv.py`](file:///f:/MAXIM%20V2/backend/tests/test_phase14_mark_liv.py) (139/139 total backend tests passing 100% green).
+- [x] **Phase 15: ZhiGui UI Second Brain & Autonomous Learning Loop** (CarlWangChina/zhigui-openclaw-ui-second-brain-skill)
+  - Implemented [`backend/second_brain.py`](file:///f:/MAXIM%20V2/backend/second_brain.py) with SQLite WAL tables `learned_skills` and `error_reflexions`.
+  - Autonomous multi-step action pattern crystallization into reusable skill specs.
+  - Bi-directional Obsidian vault synchronization generating structured notes in `vault/02 - Skills/<Skill_Name>.md`.
+  - Dynamic master Map of Content generation: `vault/02 - Skills/Skills MOC.md`.
+  - Reflexion and anti-pattern defense logging root causes and corrective rules to proactively prevent repeated failures.
+  - Active mistake-prevention rule injection into ReAct engine `build_system_prompt()`.
+  - 4 tools registered in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): `crystallize_skill`, `recall_skill`, `record_error_reflexion`, `list_learned_skills`.
+  - ReAct engine integration in [`backend/engine.py`](file:///f:/MAXIM%20V2/backend/engine.py).
+  - 5 FastAPI REST endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py): `/api/skills`, `/api/skills/crystallize`, `/api/skills/reflexions`, `/api/skills/sync-vault`.
+  - 8 unit and integration tests passing in [`backend/tests/test_phase15_second_brain.py`](file:///f:/MAXIM%20V2/backend/tests/test_phase15_second_brain.py) (147/147 total backend tests passing 100% green).
+- [x] **Phase 16: 10xProductivity Workstation & QwenPaw Sandboxed Guard** (ZhixiangLuo/10xProductivity & agentscope-ai/QwenPaw)
+  - Implemented [`backend/workstation_sandbox.py`](file:///f:/MAXIM%20V2/backend/workstation_sandbox.py) with SQLite WAL tables `sandbox_audit_log` and `workstation_snippets`.
+  - QwenPaw pre-execution command and filesystem safety audit classifying operations into `ALLOW`, `WARN`, `BLOCK`.
+  - Destructive command blocker intercepting disk formatting, root wipes, Windows system directory deletion, database drops, fork-bombs, and root traversal escapes.
+  - Sandboxed command runner with strict timeout clamps (1-60s) and stdout/stderr clipping to prevent memory overflow.
+  - 10xProductivity project scaffolder generating boilerplate structures for `python_service`, `fastapi`, and `cli_tool`.
+  - Git repository hygiene inspection scoring working tree cleanliness (0-100) and validating Conventional Commits for atomic staging.
+  - Developer snippet and recipe registry with language and tag querying.
+  - 4 Hermes tools registered in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): `sandbox_run_command`, `sandbox_audit_command`, `workstation_scaffold_project`, `workstation_git_status`.
+  - ReAct engine integration in [`backend/engine.py`](file:///f:/MAXIM%20V2/backend/engine.py).
+  - 8 FastAPI REST endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py).
+- [x] **Phase 17: Unified System Polish & End-to-End Verification**
+  - Cross-source architectural audit confirmed 0 duplicate tools, 0 missing engine dispatches (47/47 tools mapped), and 0 FastAPI route collisions (91 endpoints).
+  - Implemented 3 cross-engine synergies:
+    1. Unified Screen Perception: `mark_liv.py` delegates screen capture to `screen_tool.capture_screen()`.
+    2. Cross-pollinated Dream Engine with Idle Scout: `dream_engine.py` ingests curated overnight intelligence into Obsidian dream reflections and morning greetings.
+    3. Layer 2 Working State: `five_layer_memory.py` includes recent execution receipts in active State & Perception context.
+  - Implemented end-to-end integration test suite [`backend/tests/test_phase17_unified_verification.py`](file:///f:/MAXIM%20V2/backend/tests/test_phase17_unified_verification.py) (7/7 tests passing).
+  - Integrated OpenHuman (`tinyhumansai/openhuman`) Innovations:
+    1. **TokenJuice In-Memory Tool Compressor** ([`backend/token_juice.py`](file:///f:/MAXIM%20V2/backend/token_juice.py)): Intercepts large tool outputs (JSON, markdown, process listings) and algorithmically compresses them before context injection, saving up to 80% tokens.
+    2. **Durable Session Goals & Todo Ledger** ([`backend/session_todos.py`](file:///f:/MAXIM%20V2/backend/session_todos.py)): SQLite WAL table `session_todos` tracking incremental tasks (`pending`, `in_progress`, `completed`, `failed`), automatically injected into ReAct system prompts.
+    3. Added `ToolsetName.TODOS` and 4 Hermes tools (`add_session_todo`, `update_session_todo`, `list_session_todos`, `get_token_juice_stats`) in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py).
+    4. Added 5 REST endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py): `/api/todos` (GET, POST), `/api/todos/{id}` (PATCH, DELETE), `/api/tokenjuice/stats` (GET).
+    5. Unit & integration test suite passing 4/4 in [`backend/tests/test_openhuman_innovations.py`](file:///f:/MAXIM%20V2/backend/tests/test_openhuman_innovations.py).
+  - Complete backend regression suite passing **167/167 unit tests (100% Green, 0 Warnings, 0 Errors)**.
+  - Completion report written to [`reports/COMPLETION_REPORT_PHASE_17.md`](file:///f:/MAXIM%20V2/reports/COMPLETION_REPORT_PHASE_17.md).
+- [x] **Phase 18: IrisX AI Adaptations & Hardware Dispatchers**
+  - Integrated High-DPI Matrix & Cubic Bézier Mouse Trajectories in [`backend/mark_liv.py`](file:///f:/MAXIM%20V2/backend/mark_liv.py): Per-Monitor V2 DPI awareness (`SetProcessDpiAwarenessContext(-4)`), cubic Bézier curve interpolation with decaying micro-jitter, `bezier_move_mouse`, and smooth clicking.
+  - Active OS Hardware Dispatchers in [`backend/hardware_governor.py`](file:///f:/MAXIM%20V2/backend/hardware_governor.py): `adjust_master_volume` (0ms Win32 keybd events for up/down/mute), WMI screen brightness read/write (`get_screen_brightness`, `set_screen_brightness`), default browser registry resolution via `UserChoice\ProgId`, and real-time Wi-Fi status via `netsh`.
+  - Mobile Telekinesis ADB Bridge in [`backend/tools/adb_tool.py`](file:///f:/MAXIM%20V2/backend/tools/adb_tool.py): `ADBBridgeService` supporting device discovery, battery inspection, coordinate tap/swipe, application launch, and shell execution with graceful degradation if `adb` is missing.
+  - Tool Catalog Expansion in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): Added `ToolsetName.MOBILE_ADB` (5 tools) and 5 hardware dispatch tools in `GOVERNOR` (total 16 toolsets, 57 tools), with all 10 tools wired into [`backend/engine.py`](file:///f:/MAXIM%20V2/backend/engine.py).
+  - 8 REST Endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py): `/api/hardware/volume`, `/api/hardware/brightness` (GET, POST), `/api/hardware/default-browser`, `/api/hardware/wifi-status`, `/api/mobile/devices`, `/api/mobile/battery`, `/api/mobile/tap`, `/api/mobile/launch`.
+  - Unit tests passing 12/12 in [`backend/tests/test_phase18_irisx_adaptations.py`](file:///f:/MAXIM%20V2/backend/tests/test_phase18_irisx_adaptations.py). Full test baseline: **179/179 Pytest Unit Tests Passing (100% Green, 0 Warnings, 0 Errors)**.
+  - Completion report written to [`reports/COMPLETION_REPORT_PHASE_18.md`](file:///f:/MAXIM%20V2/reports/COMPLETION_REPORT_PHASE_18.md).
+- [x] **Phase 19: Hindsight Epistemic Mental Models & Unified Retain-Recall-Reflect Memory Engine**
+  - Integrated Hindsight epistemic reasoning substrate from arXiv:2512.12818 (Vectorize.io & Virginia Tech) with 4-network epistemic separation: World, Experience, Opinion/Mental Models, and Observation.
+  - Implemented [`backend/mental_models.py`](file:///f:/MAXIM%20V2/backend/mental_models.py): SQLite WAL table `hindsight_mental_models`, Bayesian-style confidence scoring ($0.0 \to 1.0$), evidence counting, automated reflection pattern clustering, and bi-directional Obsidian synchronization (`vault/01 - Memory/Mental Models/{name}.md` & `_Mental Models MOC.md`).
+  - Implemented unified Hindsight primitives in [`backend/five_layer_memory.py`](file:///f:/MAXIM%20V2/backend/five_layer_memory.py): `retain(content, category, source, metadata)`, `recall(query, top_k, include_mental_models)`, and `reflect(topic, session_id)`.
+  - Tool Catalog Expansion in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): Added 4 Hindsight tools in `ToolsetName.MEMORY` (`retain_memory`, `recall_memory`, `reflect_mental_models`, `get_mental_models`). Total 16 toolsets, 61 tools.
+  - ReAct Engine Integration in [`backend/engine.py`](file:///f:/MAXIM%20V2/backend/engine.py): Dynamic prompt injection of active mental models in `build_system_prompt()` and execution dispatch in `execute_tool()`.
+  - 5 FastAPI REST Endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py): `/api/memory/retain`, `/api/memory/recall`, `/api/memory/reflect`, `/api/memory/mental-models`, `/api/memory/mental-models/{id}`.
+  - Unit tests passing 16/16 in [`backend/tests/test_phase19_hindsight_memory.py`](file:///f:/MAXIM%20V2/backend/tests/test_phase19_hindsight_memory.py). Full test baseline: **195/195 Pytest Unit Tests Passing (100% Green, 0 Warnings, 0 Errors)** in 26.75s.
+  - Completion report written to [`reports/COMPLETION_REPORT_PHASE_19.md`](file:///f:/MAXIM%20V2/reports/COMPLETION_REPORT_PHASE_19.md).
+- [x] **Phase 20: OpenClaw Multi-Channel Remote Uplink & Universal Inbox**
+  - Integrated OpenClaw (`openclaw/openclaw`) "trusted gateway, channel plugins" multi-platform architecture.
+  - Implemented [`backend/multi_channel_uplink.py`](file:///f:/MAXIM%20V2/backend/multi_channel_uplink.py): SQLite WAL tables `channel_uplink_configs` and `channel_inbox_logs`, canonical `InboundMessage` and `OutboundMessage` abstractions, and sender authorization whitelists.
+  - Implemented 4 Channel Adapters: Discord (webhooks & Bot API v10 with 2000-char chunking), Slack (webhooks & chat.postMessage with 4000-char chunking), Telegram (Bot API with markdown fallback), and generic Webhooks (outbound HTTP POST).
+  - ReAct Engine Routing: `process_inbound(msg)` with sender verification, unified inbox logging, turn execution, and auto-reply dispatch to `reply_target`.
+  - Tool Catalog Expansion in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): Added `ToolsetName.UPLINK` (3 tools: `send_remote_message`, `broadcast_remote_message`, `get_remote_channel_status`). Total 17 toolsets, 64 tools.
+  - 6 FastAPI REST Endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py): `/api/uplink/webhook`, `/api/uplink/channels` (GET, POST), `/api/uplink/send`, `/api/uplink/broadcast`, `/api/uplink/inbox`.
+- [x] **Phase 21: AgentShield Runtime Security & Tool Boundary Guard** (affaan-m/ECC & AgentShield)
+  - Adapted runtime indirect prompt injection (IPI) firewall and risk-tiered tool guard architecture.
+  - Implemented [`backend/agent_shield.py`](file:///f:/MAXIM%20V2/backend/agent_shield.py) with SQLite WAL tables `agentshield_audit_log` and `agentshield_settings`.
+  - Multi-vector scanner intercepting role hijacking (`<|im_start|>`, `[SYSTEM]`, `[INST]`), instruction overrides (`ignore previous instructions`), exfiltration beacons (`![tracking](...)`), and path traversal escapes.
+  - Automatic defanging and `<untrusted_external_content>` quarantine encapsulation.
+  - 4-Tier tool risk boundary model (Tier 1 Read-Only, Tier 2 Local State, Tier 3 Network Egress, Tier 4 Privileged OS).
+  - Remote session lockdown blocking remote chat/webhook channels from triggering Tier 4 Privileged OS actions.
+  - Pre-tool call interception wired in [`backend/engine.py`](file:///f:/MAXIM%20V2/backend/engine.py) with Meta Muse security receipt logging.
+  - Tool Catalog Expansion in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): Added `ToolsetName.SECURITY` (3 tools: `agentshield_scan_text`, `agentshield_get_security_status`, `agentshield_audit_tool_call`). Total 18 toolsets, 67 tools.
+  - 6 FastAPI REST Endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py): `/api/security/scan`, `/api/security/status`, `/api/security/settings` (GET, POST), `/api/security/audit`, `/api/security/audit-tool`.
+  - Unit tests passing 13/13 in [`backend/tests/test_phase21_agentshield_security.py`](file:///f:/MAXIM%20V2/backend/tests/test_phase21_agentshield_security.py). Full test baseline: **222/222 Pytest Unit Tests Passing (100% Green, 0 Warnings, 0 Errors)** in 59.60s.
+  - Completion report written to [`reports/COMPLETION_REPORT_PHASE_21.md`](file:///f:/MAXIM%20V2/reports/COMPLETION_REPORT_PHASE_21.md).
+- [x] **Phase 22: Interactive DOM & Autonomous Browser Agent Engine** (browser-use/browser-use)
+  - Adapted indexed interactive DOM parsing and multi-tab browser automation architecture.
+  - Implemented [`backend/browser_agent.py`](file:///f:/MAXIM%20V2/backend/browser_agent.py) with SQLite WAL tables `browser_navigation_history` and `browser_saved_sessions`.
+  - DOM parser extracts 1-based indexed actionable element tree (`[1] Link`, `[2] Button`, `[3] Input`) to eliminate fragile coordinate clicking.
+  - Form state tracking and element typing with immediate submission support.
+  - Multi-tab lifecycle (`new_tab`, `close_tab`, `switch_tab`, `list_tabs`) and history navigation (`history_back`, `history_forward`).
+  - AgentShield integration: scans all inbound HTML content for indirect prompt injections and defangs malicious exfiltration beacons.
+  - CDP detection: checks local Chrome/Edge remote debugging on port 9222.
+  - Tool Catalog Expansion in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): Added `ToolsetName.BROWSER` (6 tools: `browser_navigate`, `browser_get_dom`, `browser_click_element`, `browser_type_element`, `browser_extract_text`, `browser_manage_session`). Total 19 toolsets, 77 tools.
+  - ReAct Engine Integration in [`backend/engine.py`](file:///f:/MAXIM%20V2/backend/engine.py): Pre-tool execution auditing via AgentShield and execution dispatch for all 6 browser tools.
+  - TokenJuice preservation in [`backend/token_juice.py`](file:///f:/MAXIM%20V2/backend/token_juice.py): Preserved `"dom_tree"`, `"interactive_elements"`, and `"tabs"`.
+  - 8 FastAPI REST Endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py): `/api/browser/navigate`, `/api/browser/dom`, `/api/browser/click`, `/api/browser/type`, `/api/browser/text`, `/api/browser/session`, `/api/browser/tabs`, `/api/browser/cdp-status`.
+  - Unit tests passing 13/13 in [`backend/tests/test_phase22_browser_agent.py`](file:///f:/MAXIM%20V2/backend/tests/test_phase22_browser_agent.py). Full test baseline: **235/235 Pytest Unit Tests Passing (100% Green, 0 Warnings, 0 Errors)** in 46.16s.
+  - Completion report written to [`reports/COMPLETION_REPORT_PHASE_22.md`](file:///f:/MAXIM%20V2/reports/COMPLETION_REPORT_PHASE_22.md).
+- [x] **Desktop File & Directory Organizer Engine**
+  - Implemented [`backend/file_organizer.py`](file:///f:/MAXIM%20V2/backend/file_organizer.py) with SQLite WAL table `file_organization_history`.
+  - Categorizes files into `Photos/`, `Documents/`, `Videos/`, `Audio/`, `Archives/`, `Installers/`, `Code/`.
+  - Collision avoidance (numeric suffixes `file (1).ext`) to prevent overwriting existing files.
+  - Safe dry-run previews without touching disk.
+  - Automatic exclusion of subdirectories, system files (`desktop.ini`, `thumbs.db`), and in-progress downloads (`.crdownload`, `.part`).
+  - Transaction-backed undo rollback (`undo_organization`).
+  - Tool Catalog Expansion in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): Added `ToolsetName.FILES` (3 tools: `scan_directory`, `organize_directory`, `undo_organization`). Total 20 toolsets, 80 tools.
+  - 4 FastAPI REST Endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py): `/api/files/scan`, `/api/files/organize`, `/api/files/undo`, `/api/files/history`.
+  - Unit tests passing 9/9 in [`backend/tests/test_file_organizer.py`](file:///f:/MAXIM%20V2/backend/tests/test_file_organizer.py).
+- [x] **Hermes Connection Providers Roster & Sub-Cent Usage Pricing Engine** (NousResearch/hermes-agent)
+  - Evaluated Hermes architecture (`agent/provider_registry.py`, `agent/usage_pricing.py`, `agent/model_metadata.py`).
+  - Added 13 first-class connection providers to [`backend/config.py`](file:///f:/MAXIM%20V2/backend/config.py) and [`backend/router.py`](file:///f:/MAXIM%20V2/backend/router.py): OpenRouter, Nous Portal, Anthropic, Groq, Mistral, xAI (Grok), Together AI, Fireworks AI, Cerebras, Perplexity, Cohere, SambaNova, Azure AI Foundry.
+  - Implemented provider alias mapping (`chatgpt` -> `openai`, `claude` -> `anthropic`, `gemini` -> `google`, `grok` -> `xai`, `nous-portal` -> `nous`, `together-ai` -> `together`, `fireworks-ai` -> `fireworks`, `cerebras-ai` -> `cerebras`, `azure-openai` -> `azure`).
+  - Integrated custom headers support in `ProviderConfig` (e.g. OpenRouter `HTTP-Referer` and `X-Title`).
+  - Expanded `PROVIDER_PRICING` in [`backend/hardware_governor.py`](file:///f:/MAXIM%20V2/backend/hardware_governor.py) to cover accurate rates for all 19 providers and their flagship/sub-cent models (Groq 8B at $0.05/1M, DeepSeek at $0.14/1M, Nous 405B, Claude 3.5 Sonnet, etc.).
+  - Implemented Hermes-style sub-cent precision engine: `format_cost_label(amount)` rendering costs below `$0.01` to 4 decimal places (e.g. `~$0.0046`, `~$0.0001`, or `~$<0.0001` on underflow) so high-efficiency models never falsely display as `$0.00`.
+  - Added `cost_label` tracking to `CostLedgerRecord` and `by_provider` summaries in `get_spend_summary_today()`.
+  - Added pricing catalog generator `HardwareGovernorEngine.get_pricing_catalog()`.
+  - Added FastAPI REST endpoint `/api/hardware/pricing` in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py).
+  - 8 unit tests passing in [`backend/tests/test_hermes_providers_and_pricing.py`](file:///f:/MAXIM%20V2/backend/tests/test_hermes_providers_and_pricing.py). Full test baseline: **252/252 Pytest Unit Tests Passing (100% Green, 0 Warnings, 0 Errors)** in 45.23s.
+- [x] **Native Office & Spreadsheet Data Engine** (dream-num/univer Adaptation)
+  - Implemented [`backend/office_harness.py`](file:///f:/MAXIM%20V2/backend/office_harness.py) with SQLite WAL schema: `office_workbooks`, `office_sheets`, `office_cells`, `office_cell_revisions`.
+  - Bidirectional coordinate mapper (`A1` <-> `(row, col)`) and range notation parser (`A1:B5`).
+  - Native formula engine supporting `SUM`, `AVERAGE`, `COUNT`, `MIN`, `MAX`, `IF`, `CONCAT`, and cell arithmetic (`=A1*B1+C1`).
+  - Git-style cell revision tracking with full diffs and atomic rollback (`rollback_revision`).
+  - Import/export for CSV and JSON datasets, and auto-generation of Markdown tables synced directly into Obsidian vault `vault/02 - Knowledge/Office/`.
+  - Registered 6 office tools in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): `office_create_workbook`, `office_get_sheet`, `office_update_cells`, `office_import_csv`, `office_export_csv`, `office_rollback_revision`.
+  - 6 FastAPI REST endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py): `/api/office/workbooks`, `/api/office/sheets/{sheet_id}`, `/api/office/cells`, `/api/office/import-csv`, `/api/office/export-csv/{sheet_id}`, `/api/office/rollback`.
+  - Unit tests passing 7/7 in [`backend/tests/test_office_harness.py`](file:///f:/MAXIM%20V2/backend/tests/test_office_harness.py).
+- [x] **Executive Work Guidance, Task Director & Cognitive Personas Engine** (TencentCloud/Octop Adaptation & Executive Personal Assistant)
+  - Implemented [`backend/work_guide.py`](file:///f:/MAXIM%20V2/backend/work_guide.py) with SQLite WAL schema: `work_projects`, `work_milestones`, `work_actions`.
+  - Goal decomposition engine (`decompose_goal`) splitting high-level objectives into sequential milestones and discrete action items across project domains (`organization`, `finance`, `research`, `coding`, `general`).
+  - Context-aware next action advisor (`get_next_recommended_action`) analyzing project priorities and dependency states.
+  - Action progression tracker (`update_action_status`) with automated project progress recalculation and milestone completion cascading.
+  - Obsidian vault synchronization exporting active initiatives to `vault/00 - LifeOS/Work_Tracker.md`.
+  - Implemented [`backend/cognitive_personas.py`](file:///f:/MAXIM%20V2/backend/cognitive_personas.py) with 16 MBTI cognitive archetypes (INTJ Architect, ENTJ Commander, INTP Thinker, ISTJ Auditor, etc.) plus `executive_assistant` and `bitterbot_cynic`.
+  - SQLite WAL state persistence in `cognitive_persona_state`.
+  - ReAct prompt injection in [`backend/engine.py`](file:///f:/MAXIM%20V2/backend/engine.py): dynamically injects the active thinking archetype directive into the system prompt.
+  - Registered 5 work guidance tools in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): `work_create_project`, `work_decompose_goal`, `work_get_next_action`, `work_update_action_status`, `work_list_projects`. Roster expanded to 22 toolsets and 91 tools.
+  - 8 FastAPI REST endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py): `/api/work/projects`, `/api/work/projects/{project_id}`, `/api/work/decompose`, `/api/work/next-action`, `/api/work/actions/{action_id}/status`, `/api/personas/list`, `/api/personas/active`, `/api/personas/switch`.
+  - Unit tests passing 4/4 in [`backend/tests/test_work_guide_and_personas.py`](file:///f:/MAXIM%20V2/backend/tests/test_work_guide_and_personas.py).
+  - Full test baseline: **263/263 Pytest Unit Tests Passing (100% Green, 0 Warnings, 0 Errors)** in 46.47s across all 30 test files.
+- [x] **Video & Meeting Intelligence Engine** (bradautomates/claude-video Adaptation)
+  - Implemented [`backend/video_inspector.py`](file:///f:/MAXIM%20V2/backend/video_inspector.py) with SQLite WAL schema: `video_inspections`, `video_frames`, `video_transcripts`.
+  - Stream inspection via FFprobe extracting duration, resolution, codecs, and framerate.
+  - Keyframe extraction via FFmpeg sampling visual frames at regular timestamp intervals into vault cache `vault/02 - Knowledge/Video Intel/frames/`.
+  - Audio and subtitle track extraction (parses SRT and VTT formats, extracts audio track, maps speech activity windows via silence detection).
+  - Meeting & tutorial synthesis generating structured briefing notes with visual frame links, discussion points, and action items synced to `vault/02 - Knowledge/Video Intel/`.
+  - Registered 4 video tools in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): `video_inspect_file`, `video_extract_frames`, `video_get_transcript`, `video_summarize_meeting`.
+  - 4 FastAPI REST endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py): `/api/video/inspect`, `/api/video/frames`, `/api/video/transcript`, `/api/video/summarize`.
+  - Unit tests passing 8/8 in [`backend/tests/test_video_inspector.py`](file:///f:/MAXIM%20V2/backend/tests/test_video_inspector.py).
+- [x] **Conversation Tree Branching, LibreChat Presets & Artifact Versioning** (LibreChat-AI/LibreChat Adaptation)
+  - Implemented [`backend/conversation_tree.py`](file:///f:/MAXIM%20V2/backend/conversation_tree.py) with SQLite WAL schema: `conversation_branches`, `message_tree_nodes`, `conversation_presets`, `conversation_artifacts`.
+  - Non-linear conversation tree with DAG message nodes (`parent_message_id`), branch forking (`fork_branch`) without destructive history loss, and branch switching (`switch_branch`).
+  - History reconstruction (`get_branch_history`) walking backward from leaf to root to provide exact linear lineage for any branch.
+  - Reusable operational presets with model aliases, temperature, system prompt overrides, and allowed toolsets (pre-seeded with `preset_executive_assistant`, `preset_code_architect`, `preset_video_analyst`, `preset_financial_auditor`).
+  - Versioned deliverable artifacts (`save_artifact`) with auto-incrementing version numbers and Markdown export to `vault/02 - Knowledge/Artifacts/`.
+  - Registered 6 conversation tree tools in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): `tree_fork_branch`, `tree_list_branches`, `tree_switch_branch`, `tree_save_preset`, `tree_load_preset`, `tree_save_artifact`. Total catalog expanded to **24 toolsets and 101 tools**.
+  - 9 FastAPI REST endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py): `/api/tree/branches/{session_id}`, `/api/tree/branches/fork`, `/api/tree/branches/switch`, `/api/tree/history/{session_id}`, `/api/tree/presets`, `/api/tree/presets/{preset_id}`, `/api/tree/artifacts`, `/api/tree/artifacts/{session_id}`.
+  - Unit tests passing 6/6 in [`backend/tests/test_conversation_tree.py`](file:///f:/MAXIM%20V2/backend/tests/test_conversation_tree.py).
+  - Full test baseline: **277/277 Pytest Unit Tests Passing (100% Green, 0 Warnings, 0 Errors)** in 46.52s across all 32 test files.
+- [x] **Archify Architecture & Diagram Verification Engine** (tt-a1i/archify Adaptation)
+  - Implemented [`backend/archify_engine.py`](file:///f:/MAXIM%20V2/backend/archify_engine.py) with SQLite WAL schema: `architecture_diagrams`.
+  - Mermaid syntax parser and layout validator (`validate_mermaid`) verifying headers, balanced brackets, nodes, and directional edges.
+  - Pre-built verifiable templates for system architecture, sequence diagrams, data flows, and state machines.
+  - Automated codebase architecture inspector (`inspect_codebase_architecture`) scanning Python import statements and generating module dependency graphs.
+  - Obsidian vault sync exporting interactive diagram notes to `vault/02 - Knowledge/Architecture/`.
+  - Registered 3 archify tools in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): `archify_create_diagram`, `archify_inspect_codebase`, `archify_list_diagrams`.
+  - 3 FastAPI REST endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py): `/api/archify/diagrams` (POST, GET), `/api/archify/inspect` (POST).
+  - Unit tests passing 4/4 in [`backend/tests/test_archify_engine.py`](file:///f:/MAXIM%20V2/backend/tests/test_archify_engine.py).
+- [x] **Socratic Mastery & Topic Curriculum Engine** (THU-MAIC/OpenMAIC Adaptation)
+  - Implemented [`backend/socratic_curriculum.py`](file:///f:/MAXIM%20V2/backend/socratic_curriculum.py) with SQLite WAL schema: `socratic_curricula`, `curriculum_modules`, `socratic_drills`.
+  - Topic decomposition engine (`generate_curriculum`) generating 3-stage mastery pathways (Foundations, Tradeoffs & Dialectics, Real-World Execution) and Socratic drill questions.
+  - Interactive drill runner (`get_next_drill`, `submit_drill_answer`) evaluating dialectical reasoning against core insights and tracking topic mastery (0-100%).
+  - Study guide generator syncing formatted curricula to `vault/02 - Knowledge/Curriculum/`.
+  - Registered 4 curriculum tools in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): `curriculum_create_topic`, `curriculum_get_drill`, `curriculum_submit_answer`, `curriculum_list_topics`.
+  - 4 FastAPI REST endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py): `/api/curriculum/create`, `/api/curriculum/drills/{id}/next`, `/api/curriculum/drills/submit`, `/api/curriculum/topics`.
+  - Unit tests passing 3/3 in [`backend/tests/test_socratic_curriculum.py`](file:///f:/MAXIM%20V2/backend/tests/test_socratic_curriculum.py).
+- [x] **Voice Studio & Vault-to-Audio Podcast Engine** (debpalash/VoiceStudio Adaptation)
+  - Implemented [`backend/voice_studio.py`](file:///f:/MAXIM%20V2/backend/voice_studio.py) with SQLite WAL schema: `voice_studio_profiles`, `voice_studio_productions`.
+  - Multi-speaker voice profile registry pre-seeded with 4 personas: `host_maxim`, `analyst_jenny`, `critic_eric`, `bilingual_pradeep`.
+  - Vault-to-Audio podcast generator (`synthesize_note_to_audio`): strips markdown syntax and synthesizes natural spoken audio briefings saved into `vault/02 - Knowledge/Audio Briefs/`.
+  - Multi-character dialogue synthesizer (`synthesize_dialogue`): renders scripted conversation turns and concatenates via FFmpeg into master MP3 audio.
+  - Registered 3 voice studio tools in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): `voice_studio_render_note`, `voice_studio_render_dialogue`, `voice_studio_list_profiles`. Total catalog expanded to **27 toolsets and 111 tools**.
+  - 4 FastAPI REST endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py): `/api/voice-studio/render-note`, `/api/voice-studio/render-dialogue`, `/api/voice-studio/profiles`, `/api/voice-studio/productions`.
+  - Unit tests passing 4/4 in [`backend/tests/test_voice_studio.py`](file:///f:/MAXIM%20V2/backend/tests/test_voice_studio.py).
+  - Full test baseline: **288/288 Pytest Unit Tests Passing (100% Green, 0 Warnings, 0 Errors)** in 56.44s across all 35 test files.
+- [x] **Scientific Research & Literature Discovery Engine** (K-Dense-AI/scientific-agent-skills Adaptation)
+  - Implemented [`backend/scientific_skills.py`](file:///f:/MAXIM%20V2/backend/scientific_skills.py) with SQLite WAL schema: `scientific_papers`, `scientific_dossiers`.
+  - Academic literature search (`search_arxiv`) querying arXiv API, parsing XML Atom feeds, abstracts, authors, and resolving direct PDF links.
+  - Biomedical literature search (`search_pubmed`) querying NCBI E-Utilities for PMIDs, journals, and peer-reviewed abstracts.
+  - Chemical and molecular intelligence (`lookup_pubchem_compound`) querying PubChem PUG REST API for IUPAC names, molecular formulas, molecular weights, and canonical SMILES.
+  - Research dossier and literature review synthesizer (`synthesize_literature_review`) compiling multi-paper comparative matrices and formatted BibTeX citation blocks into Obsidian vault `vault/02 - Knowledge/Research/`.
+  - Registered 4 science tools in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): `science_search_arxiv`, `science_search_pubmed`, `science_lookup_compound`, `science_synthesize_literature_review`. Total catalog expanded to **28 toolsets and 115 tools**.
+  - 5 FastAPI REST endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py): `/api/science/arxiv`, `/api/science/pubmed`, `/api/science/pubchem`, `/api/science/review`, `/api/science/papers`.
+  - Unit tests passing 4/4 in [`backend/tests/test_scientific_skills.py`](file:///f:/MAXIM%20V2/backend/tests/test_scientific_skills.py).
+  - Full test baseline: **292/292 Pytest Unit Tests Passing (100% Green, 0 Warnings, 0 Errors)** in 51.11s across all 36 test files.
+- [x] **BrowserSkill Real-Session Browser Bridge** (Tencent/BrowserSkill Adaptation)
+  - Implemented [`backend/browser_skill_bridge.py`](file:///f:/MAXIM%20V2/backend/browser_skill_bridge.py) with SQLite WAL schema: `browser_skill_actions`.
+  - Bridges agent operations directly into existing user browser sessions via CDP/WebSocket protocol without losing login cookies or stealing mouse focus.
+  - Safe JavaScript expression evaluation in active tabs and non-disruptive element interaction (`click`, `type`, `scroll`, `extract`).
+  - Registered 3 tools in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): `browserskill_get_active_tab`, `browserskill_evaluate_script`, `browserskill_execute_command`.
+  - 4 FastAPI REST endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py): `/api/browserskill/active-tab`, `/api/browserskill/evaluate`, `/api/browserskill/execute`, `/api/browserskill/actions`.
+  - Unit tests passing 5/5 in [`backend/tests/test_browser_skill_bridge.py`](file:///f:/MAXIM%20V2/backend/tests/test_browser_skill_bridge.py).
+- [x] **Magnitude Local Hardware Capability Profiler & Model Recommender** (magnitudedev/magnitude Adaptation)
+  - Implemented [`backend/magnitude_engine.py`](file:///f:/MAXIM%20V2/backend/magnitude_engine.py) with SQLite WAL schema: `hardware_profiles`.
+  - Automatically probes system CPU threads, available/total RAM, and NVIDIA GPU VRAM.
+  - Multi-tier model suitability matrix mapping 3B, 8B, 14B, 32B, and 70B models across Q4, Q5, and Q8 quantizations (`optimal_gpu_full_speed`, `feasible_cpu_ram`, `tight_requires_app_closure`, `exceeds_hardware_capacity`).
+  - Synthetic local token throughput benchmarking recording tok/sec.
+  - Registered 3 tools in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): `magnitude_profile_hardware`, `magnitude_benchmark_throughput`, `magnitude_get_profile`.
+  - 3 FastAPI REST endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py): `/api/magnitude/profile`, `/api/magnitude/benchmark`, `/api/magnitude/latest`.
+  - Unit tests passing 5/5 in [`backend/tests/test_magnitude_engine.py`](file:///f:/MAXIM%20V2/backend/tests/test_magnitude_engine.py).
+- [x] **Cursor Plugin Ecosystem Adapter** (cursor/plugins Adaptation)
+  - Implemented [`backend/cursor_plugins.py`](file:///f:/MAXIM%20V2/backend/cursor_plugins.py) with SQLite WAL schema: `cursor_plugins`.
+  - Parses, validates, and registers standard Cursor plugin manifests (`plugin.json`) into MaxIM.
+  - Validates craft rules, skills, and Model Context Protocol server configurations.
+  - Dynamic plugin toggling and runtime catalog exposure.
+  - Registered 3 tools in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): `cursor_import_plugin`, `cursor_list_plugins`, `cursor_toggle_plugin`.
+  - 3 FastAPI REST endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py): `/api/cursor-plugins/import`, `/api/cursor-plugins/list`, `/api/cursor-plugins/toggle`.
+  - Unit tests passing 5/5 in [`backend/tests/test_cursor_plugins.py`](file:///f:/MAXIM%20V2/backend/tests/test_cursor_plugins.py).
+- [x] **OpenSEO Website Visibility & Technical Auditor** (every-app/open-seo Adaptation)
+  - Implemented [`backend/open_seo.py`](file:///f:/MAXIM%20V2/backend/open_seo.py) with SQLite WAL schema: `seo_audits`.
+  - Analyzes title tag length, meta description length, single primary H1, subheading hierarchy (H2), OpenGraph social cards, canonical tags, image alt accessibility, and Schema.org JSON-LD.
+  - Keyword density profiler calculating word count, top terms, and target keyword frequency distribution.
+  - Automatically exports technical audit scorecard notes to Obsidian vault at `vault/02 - Knowledge/SEO Audits/<domain>.md`.
+  - Registered 3 tools in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py): `seo_audit_url`, `seo_analyze_keyword_density`, `seo_list_audits`. Total catalog expanded to **32 toolsets and 127 tools**.
+  - 4 FastAPI REST endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py): `/api/seo/audit-url`, `/api/seo/audit-html`, `/api/seo/keyword-density`, `/api/seo/audits`.
+  - Unit tests passing 5/5 in [`backend/tests/test_open_seo.py`](file:///f:/MAXIM%20V2/backend/tests/test_open_seo.py).
+- [x] **AgenticSkills.io 16-Category Dynamic Taxonomy Integration** (agenticskills.io Taxonomy & Catalog Merging)
+  - Implemented the official 16-Category taxonomy from `agenticskills.io`: `web-development`, `backend`, `devops`, `testing`, `ai-ml`, `data-science`, `marketing`, `seo`, `design`, `productivity`, `documents`, `security`, `database`, `mobile`, `agents`, `official`.
+  - Scraped and verified all 193 skills from AgenticSkills.io with metadata, author, rank, platforms, and `npx skills add` installation commands.
+  - Generated 193 structured library markdown files at `f:\MAXIM V2\.agents\plugins\claude-skills\library\agenticskills/<slug>.md`.
+  - Merged and enriched catalog: Expanded `catalog.json` from 555 to **731 indexed items** (615 skills, 116 agents) without LLM context window bloat.
+  - Upgraded `query_catalog.py` with:
+    - `--categories`: Lists all 16 AgenticSkills categories with titles, descriptions, and current item counts.
+    - `--category <key>`: Filters by canonical category or natural aliases (e.g. `web`, `ui-ux`, `api`, `qa`, `devops-infra`).
+    - `--inspect <id>`: Displays full documentation, author, rank, compatible platforms, directory URL, and installation command.
+    - `--stats`: Summarizes total items, skills, agents, active core vs on-demand, and category breakdowns.
+  - Updated master skill [`claude-skills`](file:///f:/MAXIM%20V2/.agents/skills/claude-skills/SKILL.md) and mirrored to global config.
+- [x] **MaxIM Sub-Agent Dynamic Skill Groups & Conductor Backend Engine** (On-Demand & Desktop-Driven Assembly)
+  - **Zero Pre-Selected Groups by Default**: Removed all static dummy channels (`group_marketing`, `group_web_dev`, etc.) so the database remains clean. Only the permanent Core Executive Council (`group_core_council`) is retained.
+  - **Dynamic Group Assembly (`assemble_dynamic_group`)**:
+    - **Manual Mode**: User asks MaxIM to assemble a squad for an objective or task; MaxIM infers category, charters the channel, selects or hires 2-3 bespoke specialists with exact skills from the 731-skill catalog, and posts an orientation brief.
+    - **Desktop-Driven Mode**: Dynamically inspects the user's active window/desktop context via `get_active_window_info()`, infers active workflow, and creates an ad-hoc squad with matching specialists.
+    - **Explicit Skills Mode**: User can request exact skill IDs (e.g. `["copywriting", "claude-seo"]`), creating tailored specialists directly mapped to catalog playbooks.
+  - **Group Pruning & Deletion (`delete_group`)**: Supports deleting ad-hoc channels and their message history on demand.
+  - **MaxIM Master Conductor Capabilities**:
+    - `dispatch_group_task`: MaxIM enters any group, posts executive directive brief, moderates specialist turns, and provides sign-off.
+    - `orchestrate_objective`: Autonomous objective analyzer mapping missions to existing channels or dynamically assembling a bespoke team on the fly, dispatching tasks, and archiving reports to Obsidian vault (`vault/03 - Agents/`).
+    - `cross_group_handoff`: MaxIM bridges deliverables and instructions between different specialized channels.
+  - **ReAct Tools Registered**:
+    - `operator_assemble_dynamic_group`, `operator_delete_group`, `operator_dispatch_group_task`, `operator_orchestrate_objective`, `operator_cross_group_handoff`, `hire_operator_agent`, `run_group_collaboration`, `schedule_agent_shift`.
+  - **FastAPI REST Endpoints**:
+    - `POST /api/operator/groups/assemble`: Assembles dynamic group from topic, requested skills, or desktop context.
+    - `DELETE /api/operator/groups/{group_id}`: Deletes an ad-hoc group and its messages.
+    - `POST /api/operator/groups/{group_id}/dispatch`: MaxIM enters group, runs turns, and records sign-off.
+    - `POST /api/operator/orchestrate`: Autonomous goal conductor.
+    - `POST /api/operator/cross-group-handoff`: Bridges deliverables between groups.
+    - `GET /api/operator/groups`: Lists active groups.
+    - `GET /api/operator/groups/{group_id}`: Gets group metadata and member roster.
+  - **Unit Test Suite**: [`backend/tests/test_operator_skill_groups.py`](file:///f:/MAXIM%20V2/backend/tests/test_operator_skill_groups.py) verified 12/12 passing.
+  - **Full Backend Regression Suite**: **324/324 Pytest tests passing 100% green** across all 41 test files in 55.23s.
+- [x] **Comprehensive Backend Audit, Security Hardening & Performance Optimization**
+  - **Bug Hunting & Error Resilience**:
+    - Fixed session amnesia in `engine.run_turn_stream()` ([`backend/engine.py`](file:///f:/MAXIM%20V2/backend/engine.py#L1461)) ensuring `session_todos` injects active session tasks rather than falling back to `"default_session"`.
+    - Added token and cost ledger recording to `run_turn_stream()` in [`backend/engine.py`](file:///f:/MAXIM%20V2/backend/engine.py#L1485), fixing $0.00 display during SSE chat turns.
+    - Delegated `SubAgent.execute_tool` to `agent_engine.execute_tool` ([`backend/subagent.py`](file:///f:/MAXIM%20V2/backend/subagent.py#L85)), eliminating an outdated 10-tool whitelist that broke modern tool calls.
+    - Implemented closing context managers with `busy_timeout=30000` in [`backend/memory.py`](file:///f:/MAXIM%20V2/backend/memory.py#L40), [`backend/chief_operator.py`](file:///f:/MAXIM%20V2/backend/chief_operator.py#L101), and [`backend/file_organizer.py`](file:///f:/MAXIM%20V2/backend/file_organizer.py#L77) to eliminate accumulating open SQLite file handles.
+  - **Security & Boundary Auditing**:
+    - Fixed path traversal in `vault_synapse.write_note` and `_resolve_note_path` ([`backend/tools/vault_tool.py`](file:///f:/MAXIM%20V2/backend/tools/vault_tool.py#L25-L85)) by enforcing `relative_to(vault_root)` on `(target_folder / filename).resolve()`.
+    - Added title and read path traversal assertions to [`backend/tests/test_vault.py`](file:///f:/MAXIM%20V2/backend/tests/test_vault.py#L60-L75).
+    - Enforced `channel_{ch_name}_` prefix on inbound webhook sessions in [`backend/multi_channel_uplink.py`](file:///f:/MAXIM%20V2/backend/multi_channel_uplink.py#L460) to prevent remote caller privilege escalation around AgentShield Tier 4 OS lockdown.
+    - Replaced insecure CORS `allow_origins=["*"]` + `allow_credentials=True` with `allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$"` in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py#L68).
+  - **Duplicate Features & Redundancy Check**:
+    - Centralized canonical `utc_now_iso()` in [`backend/config.py`](file:///f:/MAXIM%20V2/backend/config.py#L10) to unify timestamp generation across 30 duplicate definitions.
+    - Unified foreground window perception in [`backend/tools/screen_tool.py`](file:///f:/MAXIM%20V2/backend/tools/screen_tool.py#L14) by delegating to `mark_liv_service.get_active_window()`.
+    - Added connection-pooling client caching (`_async_clients` and `_sync_clients`) in [`backend/router.py`](file:///f:/MAXIM%20V2/backend/router.py#L60-L310) to prevent socket leaks and SSL handshake churn.
+  - **Overcomplexity & Simplification**:
+    - Replaced 55 lines of repetitive dynamic in-function imports in `build_system_prompt()` ([`backend/engine.py`](file:///f:/MAXIM%20V2/backend/engine.py#L218)) with a structured provider list and debug logging.
+    - Converted heavy synchronous I/O endpoints (`/api/screen`, `/api/cua/act`, `/api/files/*`) in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py) from `async def` to standard `def` so FastAPI dispatches them directly to Starlette's threadpool.
+  - **Performance & Database Optimization**:
+    - Applied `PRAGMA journal_mode=WAL;`, `PRAGMA synchronous = NORMAL;`, `PRAGMA cache_size = -64000;`, and `PRAGMA temp_store = MEMORY;` across SQLite databases.
+    - Created compound indexes: `idx_messages_session`, `idx_receipts_session`, and `idx_sessions_updated` in [`backend/memory.py`](file:///f:/MAXIM%20V2/backend/memory.py#L85), and `idx_group_messages_gid`, `idx_operator_reports_agent`, `idx_operator_reports_time` in [`backend/chief_operator.py`](file:///f:/MAXIM%20V2/backend/chief_operator.py#L168).
+  - **Verification**: **324/324 Pytest unit tests passing** across 41 test files in 55.19s with 0 regressions.
+- [x] **Phase 24: Smithery & Glama MCP Registry Hub** (AgenticSkills Layer 5 - MCP Infrastructure)
+  - **Dynamic Multi-Registry Discovery**: Searches Smithery, Glama, and official Model Context Protocol registries with curated offline baseline (12 core servers: filesystem, github, postgres, sqlite, brave-search, fetch, puppeteer, memory, slack, docker, sentry, obsidian-vault) and live web search fallbacks.
+  - **Server Manifest Inspection (`inspect_server`)**: Retrieves complete server manifests, required environment variables, tool previews, and install commands.
+  - **SQLite Persistent Mounting**: Mounted servers persist across restarts in `mcp_servers` table with full transport, command, arguments, and environment configurations.
+  - **ReAct Tools Registered**:
+    - `call_mcp_tool`, `mcp_search_registry`, `mcp_inspect_server`, `mcp_install_server`, `mcp_list_servers`, `mcp_remove_server` registered in [`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py#L312) and wired into [`backend/engine.py`](file:///f:/MAXIM%20V2/backend/engine.py#L360).
+  - **FastAPI REST Endpoints**:
+    - `GET /api/mcp/search`: Query keywords across official, smithery, and glama.
+    - `GET /api/mcp/inspect`: Inspect server specifications and environment requirements.
+    - `GET /api/mcp/servers`: List mounted servers.
+    - `POST /api/mcp/install`: Mount and persist server into SQLite.
+    - `DELETE /api/mcp/servers/{server_name}`: Unmount server.
+    - `POST /api/mcp/call`: Dispatch tool calls to mounted servers.
+  - **Unit Test Suite**: [`backend/tests/test_mcp_registry_hub.py`](file:///f:/MAXIM%20V2/backend/tests/test_mcp_registry_hub.py) (11/11 passing).
+  - **Full Backend Regression Suite**: **335/335 Pytest unit tests passing 100% green** across all 42 test files in 56.28s.
+
+---
+
+## 3. Frontend Modernization & Luxury B/W Dashboard (Phases 1–9)
+- [x] **Phase 1: Top Navigation Bar & B/W Mode Switch** ([`frontend/src/components/TopNav.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/TopNav.tsx))
+  - Minimal pill navigation with 7 core tabs (`Home`, `Memory`, `Graph`, `Agents`, `Skills`, `Connections`, `Settings`).
+  - Tactile Black & White theme toggle synchronized with `data-theme` attribute and `localStorage`.
+- [x] **Phase 2: Left Column Date & Time HUD** ([`frontend/src/components/DateTimeWidget.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/DateTimeWidget.tsx))
+  - Real-time digital clock with 12h/24h toggle, seconds split, solar glyph, and day elapsed progress bar.
+- [x] **Phase 3: Left Column Visual Uplink** ([`frontend/src/components/VisualUplink.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/VisualUplink.tsx))
+  - Standby perception frame with live engage modal supporting camera and screen selection.
+- [x] **Phase 4: Left Column System Telemetry** ([`frontend/src/components/SystemTelemetry.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/SystemTelemetry.tsx))
+  - Real-time CPU, RAM, GPU VRAM expandable details, and Ollama engine status.
+- [x] **Phase 5: Center Mascot Rig & Voice Dock** ([`frontend/src/components/MascotStage.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/MascotStage.tsx))
+  - Widened Kai vector monolith with realistic blinks, 6 emotional states, 7-bar audio visualizer mouth sync, and hands-free voice dock.
+- [x] **Phase 6: Right Column Telegram-Inspired Chat** ([`frontend/src/components/TelegramChat.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/TelegramChat.tsx))
+  - Clean message feed without checkmarks, thinking drawer, document preview reader, image lightbox, attachment dock, and model selector.
+- [x] **Phase 7: Dedicated View — Memory** ([`frontend/src/components/MemoryView.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/MemoryView.tsx))
+  - 5-layer memory overview cards, search filter, and "+ Add Memory Manually" modal connected to `/api/memory/retain`.
+- [x] **Phase 8: Dedicated View — Knowledge Graph** ([`frontend/src/components/GraphView.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/GraphView.tsx))
+  - 60 FPS HTML5 canvas physics graph with color-coded nodes: 🟠 Orange Agents, 🔵 Blue Skills, ⚪ White/Onyx Memory, 🟢 Emerald Active Sessions, pan/zoom/drag controls, and node inspector drawer.
+- [x] **Phase 9: Dedicated View — Agents & Delegation Hub** ([`frontend/src/components/AgentsView.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/AgentsView.tsx))
+  - Clear **Solo vs Group distinction**: Prominent `[ 👤 SOLO AGENT ]` badges on single specialist cards and `[ 👥 GROUP · {N} AGENTS ]` badges on collaborative councils.
+  - Universal **Monogram Initials Avatars**: Replaced brittle handpicked icons with dynamic, clean 2-letter uppercase monogram badges (`CA`, `UD`, `RC`, `DO`, `OS`, `SR`, `PO`), scaling seamlessly to hundreds of dynamic agents without manual asset assignment.
+  - **Scalable Group Member Presentation**: Handles groups with many agents (5 to 50+) effortlessly via:
+    - Stacked monogram avatar previews with `+N` badge.
+    - Dual layout toggle: **Dense Table View** (scrollable tabular layout with name, role, model, and status) vs **Cards View**.
+    - In-group instant search filter when a council has many specialists.
+  - Sidebar Scope Switcher: Quick filter between `All`, `👤 Solo (${agents.length})`, and `👥 Groups (${councils.length})`.
+  - Cleaned middle workspace: Removed redundant 3-card council selector from the center pane to keep focus on the active squad.
+  - Dual-mode cockpit:
+    - **1-on-1 Direct Dispatch (Solo Agent)**: Specialist dossier, directive prompt console with quick presets, and live execution receipt activity log.
+    - **Multi-Agent Swarm Council (Group: {N} Agents)**: Focused council workspace with DAG pipeline progression timeline.
+  - "+ Hire Specialist" modal for adding new autonomous agents to the roster.
+  - **Verification**: **10/10 Vitest tests passing**, `tsc --noEmit` 0 errors, production build verified in 2.33s.
+
+---
+
+- [x] **Phase 10: Dedicated View — `SkillsView` & MCP Marketplace Hub** ([`frontend/src/components/SkillsView.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/SkillsView.tsx))
+  - Dual-mode tabbed interface:
+    - **Tab 1: Native Toolsets (16 Tools)**: Direct interactive cards across Vault Synapse, Screen/CUA, OS & Execution, Internet Reach, Swarm Delegation, and FastMCP with dynamic parameter badges, ReAct tool signatures, and instant ReAct schema inspection drawer.
+    - **Tab 2: Model Context Protocol (MCP) Server Hub & Marketplace**: Integrated with Phase 24 backend (Smithery, Glama, Official registries), pre-configured with 12 foundational servers (filesystem, sqlite, brave-search, memory, postgres, github, slack, etc.), installation status indicators, and modal for mounting custom stdio/SSE servers.
+  - Interactive Schema Inspector Drawer with sample invocation codes and arguments contract.
+  - Custom MCP Mount Modal with command, arguments, environment variable tags, and persistent SQLite mounting.
+
+- [x] **Phase 11: Dedicated View — `ConnectionsView` & Multi-Channel Remote Uplink** ([`frontend/src/components/ConnectionsView.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/ConnectionsView.tsx))
+  - Complete integration with [`backend/multi_channel_uplink.py`](file:///f:/MAXIM%20V2/backend/multi_channel_uplink.py) and [`backend/telegram_bot.py`](file:///f:/MAXIM%20V2/backend/telegram_bot.py).
+  - Dual-tab architecture:
+    - **Tab 1: Channel Gateways (6 Adapters)**:
+      - **Telegram Bot Gateway**: Polling daemon with markdown parsing, voice synthesis, and remote commands (`/start`, `/status`, `/chat`, `/dream`, `/vault`).
+      - **Discord Gateway & Webhook**: REST API v10 and webhook integration with 2,000-character chunking.
+      - **Slack Notification Uplink**: Incoming Webhooks & Block Kit formatting with 4,000-character chunking.
+      - **Obsidian Vault Synapse**: Real-time filesystem watcher for `F:\MAXIM V2\vault` with bi-directional wikilinks and auto-checkpoints.
+      - **Universal JSON Webhook & Shortcuts**: Authenticated inbound/outbound endpoint for Apple iOS Shortcuts, Home Assistant, and Termux.
+      - **Agent Reach Internet Gateway**: Free search, Jina Reader, and GitHub REST API reach.
+    - **Tab 2: Universal Cross-Channel Ledger**: Unified inbox and outbound dispatch table with directional indicators, sender details, raw payload viewer modal, and copy actions.
+  - Manual Outbound Dispatcher Bar: Quick targeted transmission or broadcast to all channels with real-time feedback.
+  - Channel Configuration Modal: In-place editing of bot tokens, webhook URLs, target channels, and authorized sender IDs.
+  - **Verification**: **12/12 Vitest tests passing**, `tsc --noEmit` 0 errors, production build verified in 2.38s.
+
+---
+
+- [x] **Phase 12: Dedicated View — `SettingsView` & Cockpit Control Matrix** ([`frontend/src/components/SettingsView.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/SettingsView.tsx))
+  - 4-tab control plane:
+    - **Tab 1: AI Model Gateways (8 Providers)**: Full switching and configuration for Local Ollama, Google Gemini, OpenAI ChatGPT, DeepSeek AI, Anthropic Claude, Groq LPU, OpenRouter, and Custom OpenAI-compatible endpoints with dynamic API key masking and "+ Register Custom Provider" modal.
+    - **Tab 2: Neural Voice & Audio**: Edge-TTS streaming voice selection (Christopher, Ryan, Guy, Aria, Pradeep), speech rate stepper, autonomous proactivity speech toggle, and live audio synthesis testing.
+    - **Tab 3: Personality & Proactive Initiative**: Sensitivity modes (`Muted`, `Gentle`, `Balanced`, `Proactive`), persona archetype switcher (Bitterbot, Chief Operator, Silent Executor), and interjection cooldown window.
+    - **Tab 4: Privacy, Hardware & Theme**: Sacred Owner Loyalty (`Bound to: Sam`), local path redaction, credential sanitization, hardware telemetry poll rate, and high-contrast Black & White theme switch.
+  - **Verification**: **13/13 Vitest tests passing**, `tsc --noEmit` 0 errors, production build verified in 2.78s.
+
+---
+
+- [x] **Phase 13: Creative UI Engineering & Shader Architecture (Magic UI, COBE Globe, Paper Shaders, React Bits)**
+  - **Pillar 1: Magic UI (`magicuidesign/magicui`)**:
+    - Implemented [`BorderBeam`](file:///f:/MAXIM%20V2/frontend/src/components/ui/BorderBeam.tsx) with CSS `offset-path` and dynamic conic gradient tracing.
+    - Implemented [`ShimmerButton`](file:///f:/MAXIM%20V2/frontend/src/components/ui/ShimmerButton.tsx) with container-query rotating conic highlights.
+    - Implemented [`BentoGrid`](file:///f:/MAXIM%20V2/frontend/src/components/ui/BentoGrid.tsx) and [`BentoCard`](file:///f:/MAXIM%20V2/frontend/src/components/ui/BentoGrid.tsx) for asymmetric, responsive grid cards.
+  - **Pillar 2: COBE (`shuding/cobe`)**:
+    - Installed 5kB WebGL library `cobe`.
+    - Implemented [`CobeGlobe`](file:///f:/MAXIM%20V2/frontend/src/components/ui/CobeGlobe.tsx) with High-DPI `devicePixelRatio` retina scaling, Fibonacci procedural dot raymarching, spring momentum drag, and automatic context destruction on unmount.
+  - **Pillar 3: Paper Design Shaders (`paper-design/shaders`)**:
+    - Installed `@paper-design/shaders-react` & `@paper-design/shaders`.
+    - Implemented [`PaperShader`](file:///f:/MAXIM%20V2/frontend/src/components/ui/PaperShader.tsx) supporting `mesh`, `liquid`, `waves`, `dither`, `dotOrbit`, and `grain` modes with robust WebGL2 capability detection and seamless CSS gradient fallback.
+  - **Pillar 4: React Bits (`davidhdev/react-bits`)**:
+    - Implemented [`DecryptedText`](file:///f:/MAXIM%20V2/frontend/src/components/ui/DecryptedText.tsx) for cyberpunk matrix character unscrambling.
+    - Implemented [`SpotlightCard`](file:///f:/MAXIM%20V2/frontend/src/components/ui/SpotlightCard.tsx) for radial cursor-following hover illumination.
+    - Implemented [`Magnet`](file:///f:/MAXIM%20V2/frontend/src/components/ui/Magnet.tsx) for spring-damped interactive mouse pull.
+    - Implemented [`TrueFocus`](file:///f:/MAXIM%20V2/frontend/src/components/ui/TrueFocus.tsx) for interactive word focus and ambient background blur.
+  - **Live UI Upgrades**:
+    - [`MascotStage.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/MascotStage.tsx): Atmospheric `PaperShader` mesh backdrop, dynamic `DecryptedText` status transitions, active `BorderBeam` on neural reasoning, and luminous `ShimmerButton` on voice call initiation.
+    - [`SystemTelemetry.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/SystemTelemetry.tsx): Wrapped in `SpotlightCard` with radial emerald cursor illumination.
+    - [`VisualUplink.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/VisualUplink.tsx): Upgraded to `SpotlightCard` with live 3D WebGL `CobeGlobe` standby planetary perception visualization.
+  - **Master Skill & Reference Documentation**:
+    - Formally minted master skill in [`.agents/skills/creative-ui-and-shaders/SKILL.md`](file:///f:/MAXIM%20V2/.agents/skills/creative-ui-and-shaders/SKILL.md).
+    - Authored exhaustive 4-pillar technical manual in [`.agents/skills/react-and-web-design/references/creative-ui-and-shaders.md`](file:///f:/MAXIM%20V2/.agents/skills/react-and-web-design/references/creative-ui-and-shaders.md).
+  - **Verification**:
+    - `tsc --noEmit` 100% green (0 errors).
+    - Vitest test suite expanded to **22/22 tests passing** (9 new dedicated tests in [`tests/creative_ui.test.tsx`](file:///f:/MAXIM%20V2/frontend/tests/creative_ui.test.tsx)).
+    - Vite production build passing in 3.18s.
+
+---
+
+- [x] **Phase 14: Jarvis Personal Assistant Cybernetic Theme Integration (`SamJU25/Jarvis-personal-assistant`)**
+  - **Pillar 1: Stark Industries Arc Reactor (`JarvisCore.tsx`)**:
+    - Ported concentric cybernetic HUD rings, 48 radial tick marks, 32 audio-reactive waveform bars, multi-layered aperture light, dashed counter-rotating orbital nodes, and reticle axes.
+    - Full reactivity to agent states: `idle`, `listening`, `thinking`, `searching`, `talking`, `success`.
+  - **Pillar 2: Dynamic Dual-Mode Stage in [`MascotStage.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/MascotStage.tsx)**:
+    - Integrated interactive one-click switcher between the **Jarvis Arc Reactor** and the **Kai Vector Mascot**.
+    - Backdrop enhanced with procedural `PaperShader` mesh and Matrix-style `DecryptedText` status badge.
+  - **Pillar 3: Viewfinder Purity in [`VisualUplink.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/VisualUplink.tsx)**:
+    - Restored pristine optical perception viewfinder with corner reticles, status telemetry, and modal trigger.
+  - **Pillar 4: Cockpit HUD Atmosphere & Design Tokens**:
+    - Injected cybernetic color palette into [`index.css`](file:///f:/MAXIM%20V2/frontend/src/index.css): `--void: #05080b`, `--cyan: #8de2f2`, `--blue: #70aee8`, `--amber: #d6a96d`, `.cyber-grid`, `.cyber-panel`.
+    - Integrated concentric cybernetic brand-mark ring in [`TopNav.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/TopNav.tsx).
+    - Upgraded [`TelegramChat.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/TelegramChat.tsx) input dock with cyber glow and Stark command-bar focus states.
+  - **Verification**:
+    - Vitest test suite at **22/22 tests passing** (100% green).
+    - TypeScript compiler (`tsc --noEmit`): 0 errors.
+    - Vite production build passing in 3.49s.
+    - Dev servers live: FastAPI at `http://127.0.0.1:8000` (HTTP 200), Vite at `http://localhost:5173` (HTTP 200).
+
+---
+
+- [x] **Phase 16: UI/UX Tactile Ergonomics & Master Skill "make-interface-feel-better"**
+  - **Tabbed Workspace Drawer**:
+    - Relocated conversation stream to the right panel inside [`IntelligenceDrawer.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/IntelligenceDrawer.tsx).
+    - Built a compact segmented control switching between **`Chat`**, **`Intelligence`**, and **`Activity`**.
+    - Utilized zero-unmount CSS display toggling (`hidden` vs `flex`) ensuring draft messages, inputs, scroll positions, and attachments remain 100% preserved across tab switches.
+  - **Clean Chat Stream & Clutter Removal**:
+    - Eliminated redundant ReAct directives cards and starter banners from populated message streams in [`TelegramChat.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/TelegramChat.tsx), maximizing readable vertical room.
+  - **Drop-Up Combobox Ergonomics**:
+    - Converted the bottom Model selector into an upward-opening drop-up combobox with rotating upward chevron, outside-click listener, and keyboard accessibility, preventing clipping against the viewport edge.
+  - **Executive Command Console & Pedestal Reorganization**:
+    - Re-architected [`MascotStage.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/MascotStage.tsx) from an unconstrained void into an executive command deck constrained to `max-w-2xl`.
+    - Enclosed the Kai OLED mascot inside a frosted glass pedestal card (`backdrop-blur-xl bg-bg-card/50 border border-border-subtle rounded-3xl p-6 sm:p-8`) with top metallic highlight bevels and subtle radial ambient illumination.
+    - Integrated a live voice intercom & neural state caption bar directly under the visor with a one-click microphone action button.
+    - Refined per minimalist principles: removed the 4 telemetry cards, manual state buttons, and directive shortcut rows to eliminate all visual noise, giving full focus to the Kai companion visor and the live voice intercom.
+  - **Luxury Mascot Aesthetics & Dynamic Task Expressions**:
+    - **Aerospace Head Chassis**: Precision dual-beveled obsidian head casing with top specular highlight rim, deep curved 3D OLED visor glass, and machined acoustic sensor ear pods featuring 3 dynamic vertical LED level meters.
+    - **Multi-Layered Optical Eyes**: Built multi-layer OLED optics with inner phosphor gradients, crisp top-left specular glints, ambient bottom bounce reflections, and natural human-like sentience (organic blink loop with 25% double-blink chance and subtle idle micro-glances).
+    - **Dynamic Facial Expressions for Every Backend Task**:
+      - `idle`: Luminous cyan-emerald OLED capsule eyes with lifelike micro-glance scanning and calm horizon mouth.
+      - `listening`: Dilated attentive eyes (`scale-110`), dual concentric halo, and reactive voice-ingestion waveform.
+      - `thinking`: Analytical tilted gaze with rotating neural core reticles and cascading neural progress dots.
+      - `searching`: Streamlined panoramic scanner bars with sweeping horizontal radar beam across the visor.
+      - `executing`: Cybernetic HUD brackets `[ • ]` with dynamic micro-crosshairs and execution pulsing.
+      - `talking`: Engaging eyes with live 7-band voice frequency equalizer mouth articulating vocal cadence.
+      - `success`: Joyful curved smiling crescents (`^ ^`) with animated 4-point sparkle star twinkle (`✦`).
+      - `alert`: Angled concerned brows with warm amber hue for warnings.
+    - **Live Chat Event Integration**: Connected [`TelegramChat.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/TelegramChat.tsx) to dispatch real-time lifecycle states (`thinking`/`searching` -> `executing` -> `talking` -> `success` -> `idle`) so Kai actively responds to every prompt directive.
+  - **Homepage Layout & Ergonomics Refinements**:
+    - **Active Directives Wiring**: Connected `Morning Briefing` and `Check TELOS Goals` on the left sidebar to active event buses (`maxim:open-drawer-tab` and `maxim:send-prompt`). Clicking them triggers live prompt dispatch, drawer switching, and mascot neural state transitions.
+    - **Compact Perception Viewport**: Refactored [`VisualUplink.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/VisualUplink.tsx) standby viewport into a sleek `h-22` horizontal sensor frame, saving vertical space and eliminating unwanted vertical sidebar scrolling on standard 1080p laptop viewports.
+    - **Card Geometry Standardization**: Standardized left sidebar containers (`DateTimeWidget`, `Daily Directives`, `VisualUplink`, `SystemTelemetry`) to a unified `rounded-xl border border-border-subtle bg-bg-card` design rhythm.
+    - **Voice Intercom Integration**: Wired Kai's microphone toggle to Web Speech recognition with graceful fallback, streaming recognized vocal directives directly into [`TelegramChat.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/TelegramChat.tsx).
+    - **Homepage Clutter & Double-Header Streamlining**:
+      - **TopNav Latency Strip**: Removed developer debug port leftover (`• 8000`) in [`TopNav.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/TopNav.tsx); retained clean latency readout (`{latencyMs}ms`).
+      - **DateTimeWidget**: Removed redundant day progress bar track in [`DateTimeWidget.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/DateTimeWidget.tsx) while preserving full digital time HUD and test-asserted `LIVE` status badge.
+      - **IntelligenceDrawer Header**: Replaced redundant double row (`Workspace Hub` + `Live Stream`) with a unified, clean segmented tab bar (`Chat | Intelligence | Activity`).
+      - **TelegramChat Session Bar**: Compacted 48px session header down to a slim 36px utility strip (`h-9`), eliminating stacked double headers in the right drawer and expanding vertical chat room.
+    - **Live SSE Chat & Obsidian Vault Pipeline (Zero Dummy Mocks)**:
+      - **Live ReAct SSE Chat**: Replaced simulated `setTimeout` mocks in [`TelegramChat.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/TelegramChat.tsx) with live Server-Sent Events (`POST /api/chat`), streaming tokens, tool execution traces, status updates, and thinking processes in real-time.
+      - **First-Class Unsloth Studio Gateway Integration**:
+        - Registered `ProviderType.UNSLOTH` in [`backend/router.py`](file:///f:/MAXIM%20V2/backend/router.py) and configured defaults in [`backend/config.py`](file:///f:/MAXIM%20V2/backend/config.py) targeting local Unsloth Studio on `http://127.0.0.1:8888/v1` with API key `sk-unsloth-45fd21f024b07e800c8fd4dc34ba5f93`.
+        - Configured default active model to `unsloth/Qwen3.5-4B-GGUF` running with full CUDA acceleration on NVIDIA RTX 4050 Laptop GPU (~544ms per completion, $0.00 token cost).
+        - Registered `unsloth` in `PROVIDER_PRICING` within [`backend/hardware_governor.py`](file:///f:/MAXIM%20V2/backend/hardware_governor.py) at `$0.00/1M tokens`.
+        - Updated [`frontend/src/components/TelegramChat.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/TelegramChat.tsx) model combobox to default to `🦥 Unsloth: Qwen 3.5 4B (RTX 4050)`.
+        - Verified live chat turn execution end-to-end with Bengali dialect banter and owner loyalty grounding.
+      - **Native Obsidian REST Endpoints**: Implemented `/api/vault/notes`, `/api/vault/folders`, and `/api/vault/note` in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py) to read actual markdown notes and folder hierarchies from [`vault/`](file:///f:/MAXIM%20V2/vault).
+      - **Live Intelligence Drawer**: Connected [`IntelligenceDrawer.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/IntelligenceDrawer.tsx) to fetch real Obsidian notes, folder file counts, and SQLite execution receipts, with interactive modal reading.
+  - **Verification**:
+- [x] **Phase 23: Method B — Standalone Drag-and-Drop GGUF Discovery & Autonomous Native llama-server**
+  - **Zero-Cloud & Zero-Unsloth Sovereign Model Execution**:
+    - Project Models Directory: Created [`models/`](file:///f:/MAXIM%20V2/models/) with [`.gitignore`](file:///f:/MAXIM%20V2/.gitignore) protection for large `.gguf` weights, plus documentation in [`models/README.md`](file:///f:/MAXIM%20V2/models/README.md).
+    - Recursive Discovery: Updated [`backend/local_model_manager.py`](file:///f:/MAXIM%20V2/backend/local_model_manager.py) to scan `models/` recursively for `*.gguf` and `*.GGUF` files, auto-tagging them as `is_project_local=True` and `location="models/"`, and prioritizing them at the very top of the model selection list.
+    - Native 1-Click File Explorer Access: Implemented `POST /api/local/open-folder` in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py) to open `models/` directly in Windows File Explorer via `os.startfile`.
+    - Auto-Boot Lifecycle: Added `ensure_model_running(model)` in [`backend/local_model_manager.py`](file:///f:/MAXIM%20V2/backend/local_model_manager.py) and hooked into `chat_endpoint` in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py) so selecting any local GGUF automatically launches `llama-server.exe` with CUDA GPU acceleration (`-ngl 99`, `-c 16384`) on port 8080.
+    - UI Integration:
+      - In [`frontend/src/components/TelegramChat.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/TelegramChat.tsx): Added `📁 models/` button (to open folder) and `🔄 Rescan` button right in the model dropdown header. Models in `models/` display `📁 [models/] <Name> (<Quant>, <Size>GB)` and auto-select.
+      - In [`frontend/src/components/SettingsView.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/SettingsView.tsx): Added a dedicated "Method B: Drag & Drop GGUF Repository" panel with 1-click folder opening, live model count, and individual model tags.
+    - Open-Source Portability & Zero-Drive Dependency:
+      - All 7 active GGUF models (`Qwen3.5-9B-abliterated`, `Qwen3.5-4B-UD-Q4_K_XL`, `Qwen3.5-4B-Q6_K`, `gemma-4-E4B-it`, `qwen-image-2.1`, `Qwen3-ASR`, `qwen3-tts`) migrated directly into [`models/`](file:///f:/MAXIM%20V2/models/).
+      - Removed all hardcoded `F:\huggingface\hub` references from [`backend/local_model_manager.py`](file:///f:/MAXIM%20V2/backend/local_model_manager.py), [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py), [`backend/tests/test_local_model_manager.py`](file:///f:/MAXIM%20V2/backend/tests/test_local_model_manager.py), and [`frontend/src/components/TelegramChat.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/TelegramChat.tsx).
+      - MaxIM now operates as a 100% standalone, self-contained open-source distribution on any OS (Windows, macOS, Linux).
+- [x] **Phase 24: Capability-Based Model Organization & Autonomous Multi-Model Routing Engine**
+  - **Structured Capability Folders**:
+    - `models/llm/`: All-Rounder Reasoning, coding, general intelligence, autonomous tool use (`Qwen3.5-9B-abliterated`, `Qwen3.5-4B-Q6_K`, `gemma-4-E4B-it`, `Qwen3.5-4B-UD`).
+    - `models/vision/`: Image-to-image, visual inspection, chart reading, OCR (`qwen-image-2.1-Q4_K_M.gguf`).
+    - `models/asr/`: Voice-to-Text, audio transcription, speech recognition (`Qwen3-ASR-1.7B-F16.gguf`).
+    - `models/tts/`: Text-to-Voice, neural speech synthesis, vocal generation (`qwen3-tts-12hz-0.6b-base-q8_0.gguf`).
+    - Flat drag-and-drop root (`models/`) still supported with automatic heuristic classification.
+  - **Autonomous Multi-Model Routing Engine**:
+    - Implemented `select_best_model(task_type, has_image, has_audio, query)` in [`backend/local_model_manager.py`](file:///f:/MAXIM%20V2/backend/local_model_manager.py):
+      - Inspects task type, image/audio attachments, and prompt keywords.
+      - Automatically scores models in target category (project-local priority, parameter capability, quant quality).
+      - Graceful fallback to all-rounder LLM if an auxiliary category model is absent.
+    - Added `POST /api/local/select-best` in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py).
+    - Wired autonomous auto-routing into `chat_endpoint` when `model="auto"` or `local:auto`.
+  - **UI Integration**:
+    - In [`frontend/src/components/TelegramChat.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/TelegramChat.tsx): Categorized drop-up combobox with `🤖 Auto-Select (Smart Multi-Model Routing)` at top, followed by organized sections for 🧠 All-Rounder Reasoning, 👁️ Vision & Multimodal, 🎙️ Voice-to-Text (ASR), and 🔊 Text-to-Voice (TTS). Removed all hardcoded/unconnected dummy placeholders (`unsloth:...`, `ollama:...`, etc.) so only genuine connected models appear. Synced with accessible `<optgroup>` native select.
+    - In [`frontend/src/components/SettingsView.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/SettingsView.tsx): Displays detected models cleanly grouped by their 4 capability categories with folder paths and role descriptions.
+  - **Verification**:
+    - Backend Pytest: **343 / 343 tests passing** (100% green, 8/8 in `test_local_model_manager.py`).
+    - Frontend Vitest: **24 / 24 tests passing** (100% green).
+    - Frontend Typecheck: 0 errors (`tsc --noEmit`).
+    - Frontend Build: verified production bundle.
+    - Live Daemons: Port 8000 (FastAPI) and Port 5173 (Vite) running and healthy.
+
+- [x] **Phase 25: Background ASR & TTS Engine Isolation, Two-Way Neural Voice & Vocal Synthesis**
+  - **Decoupled ASR & TTS from Chat Combobox**:
+    - Cleaned [`frontend/src/components/TelegramChat.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/TelegramChat.tsx) so `models/asr/` and `models/tts/` models are omitted from the conversational model selector.
+    - Chat combobox now exclusively surfaces conversational and reasoning models (`Auto-Select`, `models/llm/`, `models/vision/`). Zero dummy models or placeholders are shown.
+  - **Dedicated Background ASR & TTS Configuration in Settings**:
+    - Upgraded the Voice tab in [`frontend/src/components/SettingsView.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/SettingsView.tsx) with dedicated selection panels for Speech-to-Text (ASR) engines (`models/asr/` local weights, browser Web Speech API, Cloud Whisper) and Text-to-Speech (TTS) engines (`models/tts/` local weights, Edge-TTS streaming cloud, Kokoro-82M).
+    - Added live audio playback test with real HTML5 audio output so users can hear MaxIM synthesize voices on demand.
+  - **Two-Way Voice (Speak & Listen)**:
+    - Added dedicated Microphone button in the input dock of [`frontend/src/components/TelegramChat.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/TelegramChat.tsx) with real-time transcription feedback and pulse indicators.
+    - Eliminated fake canned mock message fallback from [`frontend/src/components/MascotStage.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/MascotStage.tsx), integrating true real-time speech recognition and live hearing captions.
+    - Wired neural voice playback into assistant response completion (`playVoice` on `event.type === 'done'`) when Auto-Speak is enabled, plus individual "Speak / Stop" audio buttons on every assistant message card.
+  - **Verification**:
+    - Backend Pytest: **343 / 343 tests passing** (100% green).
+    - Frontend Vitest: **24 / 24 tests passing** (100% green).
+    - Frontend Typecheck: 0 errors (`tsc --noEmit`).
+    - Live Daemons: Port 8000 (FastAPI) and Port 5173 (Vite) running and healthy.
+
+- [x] **Phase 26: Vision Model Chat Combobox Isolation & Autonomous Background Image Routing**
+  - **Decoupled Vision from Chat Combobox**:
+    - Removed `models/vision/` from `categorizedModelGroups` and `modelOptions` in [`frontend/src/components/TelegramChat.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/TelegramChat.tsx).
+    - Removed Vision & Multimodal section from the dropup listbox and `<select>` native element.
+    - Chat combobox now purely focuses on reasoning and coding LLMs (`models/llm/`) and `🤖 Auto-Select`.
+  - **Autonomous Vision Execution on Image Intent or Attachments**:
+    - Updated `select_best_model` in [`backend/local_model_manager.py`](file:///f:/MAXIM%20V2/backend/local_model_manager.py) with expanded visual intent detection (creating, generating, seeing, finding, inspecting images).
+    - Updated `ChatRequest` and `chat_endpoint` in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py) to accept `has_image` and `attachments`. Automatically routes to `qwen-image-2.1-Q4_K_M.gguf` in `models/vision/` whenever an image is attached or image intent is detected, ensuring `llama-server` runs the vision model seamlessly in the background.
+    - Updated `executeSend` in [`frontend/src/components/TelegramChat.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/TelegramChat.tsx) to detect image attachments and queries, passing `has_image` and `attachments` to `/api/chat` and setting mascot status to `Activating Vision & Multimodal neural pipeline...`.
+    - Updated [`frontend/src/components/SettingsView.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/SettingsView.tsx) to describe `models/vision/` as an autonomous background pipeline.
+  - **Verification**:
+    - Backend Pytest: **344 / 344 tests passing** (100% green, 9/9 in `test_local_model_manager.py`).
+    - Frontend Vitest: **24 / 24 tests passing** (100% green).
+    - Frontend Typecheck: 0 errors (`tsc --noEmit`).
+    - Live Daemons: Port 8000 (FastAPI) and Port 5173 (Vite) running and healthy.
+
+- [x] **Phase 27: Connected Cloud Models Dynamic Combobox & Hybrid Auto-Select Routing**
+  - **Dynamic Cloud Provider Discovery (`get_connected_cloud_providers`)**:
+    - Added `get_connected_cloud_providers()` to `ModelRouter` in [`backend/router.py`](file:///f:/MAXIM%20V2/backend/router.py) and exposed `connected_cloud_providers` on `/api/providers` in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py).
+    - Strictly filters for verified providers with active, non-dummy API keys (Anthropic, OpenAI, Gemini, DeepSeek, Groq, OpenRouter, Mistral, xAI, etc.), excluding internal local server aliases.
+  - **Zero-Dummy Connected Cloud Combobox (`TelegramChat.tsx`)**:
+    - Updated [`frontend/src/components/TelegramChat.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/TelegramChat.tsx) to query `/api/providers` alongside `/api/local/models`.
+    - Cloud models appear dynamically under `☁️ Connected Cloud Models` with their verified model name and `Cloud Connected` badge.
+    - Zero dummy or placeholder models: if no cloud API keys are configured, the section is completely hidden.
+    - Updated `executeSend` to cleanly parse `cloud:<provider>:<model>` and dispatch the respective provider and model payload to `/api/chat`.
+  - **Hybrid Cloud Auto-Routing & Resilient Failover**:
+    - Updated `select_best_model` in [`backend/local_model_manager.py`](file:///f:/MAXIM%20V2/backend/local_model_manager.py) to incorporate connected cloud models into the auto-routing pool.
+    - Boosts cloud candidates when explicit cloud/frontier intent is detected (`"Use Claude/GPT/Gemini"`, or extreme architecture queries), while keeping everyday coding, fast chat, and vision on local hardware.
+    - Added automatic cloud failover in `chat_endpoint`: if the local `llama-server` cannot start or hits memory constraints, MaxIM automatically fails over to the connected cloud provider.
+  - **Verification**:
+    - Backend Pytest: **345 / 345 tests passing** (100% green, 10/10 in `test_local_model_manager.py`).
+    - Frontend Vitest: **24 / 24 tests passing** (100% green).
+    - Frontend Typecheck: 0 errors (`tsc --noEmit`).
+    - Live Daemons: Port 8000 (FastAPI) and Port 5173 (Vite) running and healthy.
+
+  - **Chat Toolstrip & Input Ergonomics Refinement**:
+    - Removed the redundant microphone button from the bottom chat input bar (voice interaction is natively housed in the central Mascot stage).
+    - Fixed combobox trigger size: now displays compact single-line `🤖 Auto-Select` (`h-6`, `max-w-[200px]`, `whitespace-nowrap`) preventing 2-line vertical wrapping.
+    - Removed the `Voice: ON / OFF` toggle button from the chat toolstrip, leaving a pristine minimal model bar.
+    - **Completely Blank Initial Chat State (Zero Placeholders/Cards)**:
+      - Removed the starter prompts and directives card entirely from [`frontend/src/components/TelegramChat.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/TelegramChat.tsx).
+      - When opening MaxIM or starting a new chat session, the chat canvas is 100% blank, ready for direct input without any banners, cards, or buttons.
+      - Updated [`frontend/tests/app.test.tsx`](file:///f:/MAXIM%20V2/frontend/tests/app.test.tsx) asserting a blank message stream on initial render and upon clicking "New Chat".
+    - **Mascot Stage Voice & Telemetry Redesign (Non-Chat Appearance)**:
+      - Redesigned the companion controls in [`frontend/src/components/MascotStage.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/MascotStage.tsx) to eliminate the wide input-box container that looked like a chat dock.
+      - Replaced with a dedicated pill button for **Voice Intercom** (`[ 🎙️ Voice Intercom ]` / `[ 🔴 Listening... Click to stop ]`) and an unboxed ambient companion telemetry line underneath.
+
+- [x] **Phase 28: Voice Intercom Lifecycle & Two-Way Vocal Articulation Loop**
+  - **Browser Permission & Speech Recognition Lifecycle**:
+    - Resolved immediate cancellation issue: Added explicit `navigator.mediaDevices.getUserMedia({ audio: true })` mic permission check in [`frontend/src/components/MascotStage.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/MascotStage.tsx).
+    - Enabled `recognition.continuous = true` and updated `onerror` to ignore transient `no-speech` pauses, allowing users time to formulate directives without speech recognition aborting.
+    - Added clean error status reporting for blocked permissions (`'not-allowed'`) and network quirks (`'network'`).
+    - Added automatic silence detection timer (1.8s silence following speech) and manual toggle support (`stopListeningAndSubmit`).
+    - Dispatched voice directives via `maxim:send-prompt` with `{ prompt: spoken, source: 'voice' }`.
+  - **Autonomous Two-Way Voice Turn-Taking**:
+    - Updated [`frontend/src/components/TelegramChat.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/TelegramChat.tsx) so voice-initiated turns flag `forceVoiceResponse: true`.
+    - Automatically invokes Edge-TTS `playVoice(accumulatedContent, assistantMsgId)` on completion for all voice turns without requiring users to find and toggle an auto-speak switch in settings.
+    - Synchronized mascot state transitions: mascot stays in `talking` throughout audio playback, with `audio.onended` / `audio.onerror` reliably returning to `idle`.
+  - **Low-Latency Edge-TTS Speech Formatting**:
+    - Updated `/api/voice/synthesize` in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py) with `voice_synthesizer.format_text_for_speech`, generating concise natural spoken responses.
+  - **Verification**:
+    - Backend Pytest: **345 / 345 tests passing** (100% green, 14/14 server & memory tests).
+    - Frontend Vitest: **24 / 24 tests passing** (100% green).
+    - Frontend Typecheck: 0 errors (`tsc --noEmit`).
+    - Live Daemons: Port 8000 (FastAPI) and Port 5173 (Vite) running and healthy.
+
+- [x] **Phase 29: Domain ASR Vocabulary Guard & Low-Latency Streaming Vocal Articulation (<0.8s)**
+  - **Domain ASR Vocabulary Normalization**:
+    - Eliminated ASR misrecognition of "MaxIM" as "magazine" / "maximum": implemented `cleanVoiceUtterance` phonetic normalizer in [`frontend/src/components/MascotStage.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/MascotStage.tsx) converting `magazine`, `maximum`, `max in`, `max aim`, `mexican`, `macsim` to `MaxIM`.
+    - Added domain vocabulary corrections for `TELOS`, `LifeOS`, `Bitterbot`, `OpenHuman`, `Zylos`, `Hermes`.
+    - Added `initial_prompt` keyword biasing to local Faster-Whisper and `_transcribe_audiocpp` in [`backend/local_asr.py`](file:///f:/MAXIM%20V2/backend/local_asr.py).
+  - **Elimination of Cold-Start Model Reboots & KV-Cache Hit Optimization**:
+    - Resolved 10+ second model reload freezes: added `get_running_model_info` and Warm Model Affinity (`+200.0` score bonus in `select_best_model`) in [`backend/local_model_manager.py`](file:///f:/MAXIM%20V2/backend/local_model_manager.py) so models hot in VRAM on port 8080 are reused immediately (<0.01s).
+    - Optimized prompt layout in [`backend/engine.py`](file:///f:/MAXIM%20V2/backend/engine.py): placed static invariant instructions (Soul, TELOS, Privacy Contract, Personas) at the front and dynamic context (active window, session todos) at the tail to guarantee 100% KV-cache prefix hits in `llama-server`.
+  - **Real-Time Token Streaming in ReAct Engine**:
+    - Updated `run_turn_stream` in [`backend/engine.py`](file:///f:/MAXIM%20V2/backend/engine.py) to stream tokens directly via `model_router.stream_chat_completion(...)`. Total turnaround dropped from 17.74s to 1.17s (TTFT: 0.75-0.81s).
+  - **Streaming Vocal Articulation & Conversational Barge-In**:
+    - Eliminated post-completion speech delay in [`frontend/src/components/TelegramChat.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/TelegramChat.tsx): MaxIM now begins speaking out loud at the first sentence delimiter (`.`, `!`, `?`) during streaming (~0.8s into generation), queueing subsequent sentences seamlessly.
+    - Added full-duplex conversational barge-in: clicking Intercom in [`frontend/src/components/MascotStage.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/MascotStage.tsx) dispatches `maxim:stop-speaking`, instantly stopping speech so the user can speak uninterrupted.
+  - **Verification**:
+    - Backend Pytest: **346 / 346 tests passing** (100% green, 0 errors).
+    - Frontend Vitest: **24 / 24 tests passing** (100% green).
+    - Frontend Typecheck & Build: 100% green (`tsc && vite build`).
+    - Live Daemons: Port 8000 (FastAPI), Port 5173 (Vite), Port 8080 (llama-server) running and responsive.
+
+- [x] **Phase 30: High-Speed System 1 Laya Decision Engine Integration**
+  - **Laya Framework Deployment**:
+    - Installed and verified `laya` (0.3.20) in `backend/.venv` along with `torch` (2.14.0), `transformers` (5.17.0), and `safetensors` (0.8.0).
+    - Downloaded and cached official ModernBERT checkpoint `convaiinnovations/laya` locally.
+  - **Engine Architecture ([`backend/decision_engine.py`](file:///f:/MAXIM%20V2/backend/decision_engine.py))**:
+    - **Pre-LLM Intent & Language Triage**: Pure Python script router detects languages (English vs. Multilingual) in <0.5ms; evaluates `choice` questions over user query across model categories (`vision`, `asr`, `tts`, `llm`).
+    - **Post-LLM Response & Hallucination Gate**: Evaluates `(User Query, Assistant Response)` $\rightarrow$ `addresses_query` via Laya `noul` (binary probability), flagging off-topic drift (e.g. topic-locking to past subjects).
+    - **Tool Safety Scoring**: Evaluates risk levels (`safe`, `caution`, `dangerous`) before executing commands, blocking destructive shell command patterns.
+    - **Generic Predictor**: Exposes `predict(state, questions)` for any subagent or extension to run non-autoregressive single-pass forward decisions.
+  - **Local Model Manager Neural Enhancement ([`backend/local_model_manager.py`](file:///f:/MAXIM%20V2/backend/local_model_manager.py))**:
+    - Integrated `decision_engine.classify_intent` into `select_best_model(task_type="auto")` with dual import resilience and fallback to high-signal heuristics.
+  - **FastAPI Endpoints in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py)**:
+    - `POST /api/decision/route`: Intent classification and language detection.
+    - `POST /api/decision/verify`: Post-generation hallucination and topic-drift audit.
+    - `POST /api/decision/safety`: Tool action risk assessment.
+    - `POST /api/decision/predict`: Arbitrary structured decision forward passes.
+  - **Verification**:
+    - Dedicated Test Suite: 7/7 tests passing in [`backend/tests/test_decision_engine.py`](file:///f:/MAXIM%20V2/backend/tests/test_decision_engine.py).
+    - Full Backend Test Suite: **353 / 353 tests passing (100% green)** in 53.65s across all 44 test files.
+    - Frontend Vitest: **24 / 24 tests passing (100% green)** in 15.41s.
+    - Live Endpoints Verified: Tested `/api/decision/route`, `/api/decision/verify`, and `/api/decision/safety` on `http://127.0.0.1:8000`.
+
+- [x] **Phase 31: Native Neural Image Generation Engine & Obsidian Vault Media Integration**
+  - **Image Generation Engine ([`backend/image_generator.py`](file:///f:/MAXIM%20V2/backend/image_generator.py))**:
+    - Multi-provider architecture with free zero-API-key diffusion generation (Pollinations FLUX/SDXL) with prompt style enhancement (photorealistic, cinematic, anime, cyberpunk, sketch, oil painting).
+    - Asynchronous download with unique slugged naming (`gen_YYYYMMDD_HHMMSS_<slug>_<hash>.jpg`) stored in `vault/02 - Knowledge/Images/`.
+    - Direct cloud URL fallback ensuring instant preview resilience if local download suffers transient network lag.
+    - Automatic companion Obsidian markdown note generation linking prompt, style, resolution, timestamp, and local image embed.
+  - **FastAPI Static Serving & REST Endpoints ([`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py))**:
+    - `GET /api/images/{filename}`: Safe `FileResponse` serving from vault image directory with path traversal protection.
+    - `POST /api/image/generate`: REST endpoint accepting `prompt`, `width`, `height`, `style`, and `seed`.
+  - **Security & AgentShield Permission ([`backend/agent_shield.py`](file:///f:/MAXIM%20V2/backend/agent_shield.py))**:
+    - Registered `"generate_image": ToolRiskTier.TIER_2_LOCAL_STATE` in `TOOL_TIER_MAPPING`.
+  - **Hermes Toolset Catalog & Model Scoping ([`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py), [`backend/engine.py`](file:///f:/MAXIM%20V2/backend/engine.py))**:
+    - Added `ToolsetName.MEDIA = "media"` to `ToolsetName` enum.
+    - Registered `MEDIA_TOOLS` with `generate_image` in `TOOLSET_REGISTRY` (28 toolsets, 112 tools).
+    - Added `"generate_image"` to `core_tool_names` in `get_scoped_tools()` so local GGUF models (`llama-server`) receive the tool schema.
+    - Wired `execute_tool()` to invoke `image_generator.generate()`.
+    - In `run_turn_stream()`, added real-time SSE yield `{"type": "image", "url": img_url, "prompt": prompt}`.
+  - **Frontend Real-Time Card & Modal Viewer ([`frontend/src/components/TelegramChat.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/TelegramChat.tsx))**:
+    - Updated SSE event listener to capture `event.type === 'image'`, `generate_image` tool results, and markdown image links into `accumulatedImages`.
+    - Rendered luxury dark image preview cards with click-to-enlarge modal viewer and Obsidian link indicators.
+  - **Verification**:
+    - Dedicated Test Suite: 4/4 tests passing in [`backend/tests/test_image_generator.py`](file:///f:/MAXIM%20V2/backend/tests/test_image_generator.py).
+    - Full Backend Test Suite: **357 / 357 tests passing (100% green)** in 85.43s across all 45 test files.
+    - Frontend Vitest: **24 / 24 tests passing (100% green)** in 15.41s.
+    - Frontend Typecheck & Build: 100% green (`tsc && vite build`).
+    - Live Endpoints Verified: Tested `POST /api/image/generate` and `GET /api/images/{filename}` on `http://127.0.0.1:8000`.
+
+- [x] **Phase 32: Document & Image Reader Engine, Multimodal Vision & Diffusion Guardrail**
+  - **Diffusion GGUF Diagnosis & Isolation ([`backend/local_model_manager.py`](file:///f:/MAXIM%20V2/backend/local_model_manager.py))**:
+    - Diagnosed binary tensor schema of `models/vision/qwen-image-2.1-Q4_K_M.gguf`: contains `model.diffusion_model.*` (latent image diffusion architecture for ComfyUI/sd.cpp), NOT causal autoregressive tokens.
+    - Attempting to boot it in `llama-server.exe` caused an instant crash (`tensor name 4 is too long: 71 >= 64`), killing port 8080 and yielding `LLM Connection Error: Could not connect to 'local'`.
+    - Implemented binary header inspection to detect diffusion tensors and set `is_diffusion=True`.
+    - Guarded `ensure_model_running()` so diffusion models do NOT replace the active reasoning LLM on port 8080.
+    - Implemented automatic fallback watchdog to restore the primary LLM if any process exits unexpectedly.
+  - **Autonomous Document & Image Reader ([`backend/document_reader.py`](file:///f:/MAXIM%20V2/backend/document_reader.py))**:
+    - High-fidelity text extraction from PDF (`pypdf`), Word DOCX (`zipfile` word/document.xml extraction), CSV (formatted markdown tables), JSON, and source code files.
+    - Image inspection via Pillow (`PIL.Image`) extracting dimensions, color mode, aspect ratio, and metadata, with cloud multimodal vision integration (OpenAI GPT-4o, Anthropic Claude 3.5, Google Gemini) when API keys are connected.
+    - Base64 attachment ingestion writing files directly into `vault/01 - Memory/Attachments/`.
+  - **Hermes Toolset Catalog & Engine Scoping ([`backend/tools/catalog.py`](file:///f:/MAXIM%20V2/backend/tools/catalog.py), [`backend/engine.py`](file:///f:/MAXIM%20V2/backend/engine.py))**:
+    - Added `read_document` and `inspect_image` to `MEDIA_TOOLS` and `core_tool_names`.
+    - Wired tool execution branches in `engine.py`.
+    - Registered Tier 1 Read-Only security ranking in [`backend/agent_shield.py`](file:///f:/MAXIM%20V2/backend/agent_shield.py).
+  - **FastAPI Endpoints & Chat Attachment Context ([`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py))**:
+    - Added `POST /api/document/read` and `POST /api/image/inspect`.
+    - Separated `is_image_generation` (kept on reasoning LLM to call `generate_image`) from `is_visual_inspection`.
+    - In `chat_endpoint`, automatically decodes dropped attachments, saves them to the vault, and injects `[Attached File: <path>]` into prompt context for immediate reading.
+  - **Frontend Attachment Forwarding ([`frontend/src/components/TelegramChat.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/TelegramChat.tsx))**:
+    - Updated `executeSend` to include `dataUrl` and `content` in the `/api/chat` payload.
+  - **Verification**:
+    - Dedicated test suite: 8/8 tests passing in [`backend/tests/test_document_reader.py`](file:///f:/MAXIM%20V2/backend/tests/test_document_reader.py).
+    - Model manager test suite: 10/10 tests passing in [`backend/tests/test_local_model_manager.py`](file:///f:/MAXIM%20V2/backend/tests/test_local_model_manager.py).
+    - Decision engine test suite: 7/7 tests passing in [`backend/tests/test_decision_engine.py`](file:///f:/MAXIM%20V2/backend/tests/test_decision_engine.py).
+
+- [x] **Phase 33: Deterministic Image Generation Execution & CUDA GPU Acceleration**
+  - **CUDA Runtime DLL Restoration**:
+    - Discovered `llama-server.exe` was falling back to CPU execution because `cublas64_13.dll`, `cublasLt64_13.dll`, `cudart64_13.dll`, and `cufft64_12.dll` were missing from the release folder.
+    - Synchronized libraries from `~/.unsloth/audio.cpp/bin/` to `llama.cpp/build/bin/Release/`.
+    - Confirmed `CUDA0: NVIDIA GeForce RTX 4050 Laptop GPU (6140 MiB)` active with 4.1 GB VRAM allocated.
+    - Added automated self-healing DLL guarantee in [`backend/local_model_manager.py`](file:///f:/MAXIM%20V2/backend/local_model_manager.py).
+    - Reduced first-token latency from **70.8s $\rightarrow$ 1.4s (50x speedup)**.
+  - **Deterministic `generate_image` Invocation**:
+    - Identified that `llama-server.exe` requires `tool_choice` to be string `"required"` rather than a JSON dictionary.
+    - Added intent detection in [`backend/engine.py`](file:///f:/MAXIM%20V2/backend/engine.py): on iteration 1 of image generation prompts, isolates tool scope to `generate_image` and passes `tool_choice="required"`.
+    - Added negative few-shot filtering to purge obsolete pre-Phase-31 "I cannot generate images" messages from the prompt history.
+    - Updated [`backend/soul.md`](file:///f:/MAXIM%20V2/backend/soul.md) with explicit image generation capability rules and reference examples.
+    - Pruned obsolete refusal records from `maxim.db`.
+  - **Verification**:
+    - Live end-to-end SSE stream verified generating and embedding images in 7.9s directly to `vault/02 - Knowledge/Images/`.
+    - 22/22 unit tests passing in 11.37s across image generator, document reader, and local model manager.
+- [x] **Phase 32: Dynamic Intent Scoping, Frontend Reality Hookup, Unified Browser Architecture & Dynamic Extension Capsules**
+  - **Dynamic Intent-Based Tool Scoping**:
+    - Upgraded `get_scoped_tools()` in [`backend/engine.py`](file:///f:/MAXIM%20V2/backend/engine.py): local models (llama-server/Ollama) now receive a high-leverage 24-tool core plus dynamic intent bundles (browser, desktop OS, file organizer, office spreadsheets, MCP, science, adb) matching prompt keywords.
+    - Eliminates context-choking tool explosion while granting instant access to specialized capabilities.
+  - **Frontend Reality Hookup & Mock Purge**:
+    - Replaced fake `setTimeout` in [`frontend/src/App.tsx`](file:///f:/MAXIM%20V2/frontend/src/App.tsx) with live TELOS prompt dispatch.
+    - Created `GET /api/tools` in [`backend/server.py`](file:///f:/MAXIM%20V2/backend/server.py) and dynamically wired [`frontend/src/components/SkillsView.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/SkillsView.tsx).
+    - Purged mock fallback merges in [`frontend/src/components/AgentsView.tsx`](file:///f:/MAXIM%20V2/frontend/src/components/AgentsView.tsx) to reflect the real database operator team.
+  - **Unified Browser Subsystem**:
+    - Consolidated real-session browser bridging (`BrowserSkillBridge`) into [`backend/browser_agent.py`](file:///f:/MAXIM%20V2/backend/browser_agent.py) as the authoritative browser core.
+    - Converted [`backend/browser_skill_bridge.py`](file:///f:/MAXIM%20V2/backend/browser_skill_bridge.py) into a clean, backward-compatible re-export facade.
+  - **Dynamic Extension Capsule Architecture (`backend/extensions/`)**:
+    - Created [`backend/extensions/extension_manager.py`](file:///f:/MAXIM%20V2/backend/extensions/extension_manager.py) enabling zero-config drop-in of external GitHub repositories.
+    - Each capsule folder defines `manifest.json` + `tools.py` which are automatically discovered, registered in `catalog.py`, exposed via `GET /api/extensions`, and scoped into the ReAct engine.
+    - Added working `openjarvis_capsule` bridging Stanford OpenJarvis multimodal grounding and proactive agent telemetry.
+  - **Verification**:
+    - 44/44 pytest tests passing in 9.01s across extensions, server, browser, and engine.
+    - 24/24 vitest tests passing in 3.83s, TypeScript typecheck and production build 100% clean.
+
+---
+
+## 4. Multi-Model Local Orchestration & Perception Feed (Parts 1 & 2 Completed & Verified)
+- **RTX 4050 6GB GDDR6 Dynamic VRAM Governor**:
+  - Implemented in [`backend/local_model_manager.py`](file:///f:/MAXIM%20V2/backend/local_model_manager.py) (`calculate_hardware_safe_params()`).
+  - Queries real-time VRAM via `hardware_governor`. Enforces hardware-safe parameters:
+    - 9B models: `-ngl 28, -c 4096` (keeps memory $<5,000$ MB, completely preventing Windows PCIe paging crashes).
+    - Vision models: `-ngl 99, -c 8192` (2.5 GB model + 0.8 GB projector = 3.3 GB, leaving 1.8 GB safety buffer).
+    - 4B models: `-ngl 99, -c 8192` to `16384`.
+- **Auto mmproj Projector Pairing**:
+  - Implemented `find_matching_projector()` in [`backend/local_model_manager.py`](file:///f:/MAXIM%20V2/backend/local_model_manager.py). Automatically discovers and appends `--mmproj mmproj-Qwen3VL-4B-Instruct-F16.gguf` whenever a vision model is launched.
+- **Model Categorization & Inventory**:
+  - `models/llm/`: `Qwen3.5-9B-abliterated-Q4_K_M.gguf`, `Qwen3.5-4B-Q6_K.gguf`, `Qwen3.5-4B-UD-Q4_K_XL.gguf`, `gemma-4-E4B-it-qat-UD-Q2_K_XL.gguf`.
+  - `models/vision/`: `Qwen3VL-4B-Instruct-Q4_K_M.gguf` + `mmproj-Qwen3VL-4B-Instruct-F16.gguf`, `qwen-image-2.1-Q4_K_M.gguf` (diffusion generator).
+  - `models/embedding/`: `Qwen3-Embedding-0.6B-Q8_0.gguf` (dense vectors, 1024-dim), `Qwen3-Reranker-0.6B-q8_0.gguf` (cross-encoder relevance).
+  - `models/asr/`: `qwen3-asr-0.6b-q8_0.gguf`, `qwen3-asr-1.7b-q8_0.gguf`.
+  - `models/tts/`: `qwen3-tts-12hz-0.6b-base-q8_0.gguf`, `voice_ref_16k.wav`.
+- **Part 1: Semantic Retrieval & Reranker Pipeline (Verified)**:
+  - Created [`backend/retrieval_engine.py`](file:///f:/MAXIM%20V2/backend/retrieval_engine.py) with `RetrievalEngine` managing `llama-server.exe` on port 8085 (embedding) and 8086 (reranking).
+  - Hybrid vault search integrating BM25 lexical with cosine dense similarity and cross-encoder neural rerank pass.
+  - Integrated into `search_vault()` in [`backend/tools/vault_tool.py`](file:///f:/MAXIM%20V2/backend/tools/vault_tool.py) and `recall()` in [`backend/five_layer_memory.py`](file:///f:/MAXIM%20V2/backend/five_layer_memory.py).
+  - REST endpoints added: `GET /api/retrieval/status`, `POST /api/retrieval/embed`, `POST /api/retrieval/rerank`, `POST /api/vault/semantic-search`.
+  - Tested: 8/8 tests passing in [`backend/tests/test_retrieval_engine.py`](file:///f:/MAXIM%20V2/backend/tests/test_retrieval_engine.py).
+- **Part 2: Local Audio Pipeline (ASR & TTS) (Verified)**:
+  - High-performance CUDA execution via `audiocpp_cli.exe`:
+    - ASR tested: `qwen3-asr-0.6b-q8_0.gguf` transcribes 16kHz mono audio in 603ms (12.3x realtime!) on RTX 4050 CUDA.
+    - TTS tested: `qwen3-tts-12hz-0.6b-base-q8_0.gguf` synthesizes 24kHz studio audio cloned to MaxIM's voice in 3.29s on CUDA.
+  - Dynamic model selection & discovery in [`backend/local_asr.py`](file:///f:/MAXIM%20V2/backend/local_asr.py) and [`backend/voice.py`](file:///f:/MAXIM%20V2/backend/voice.py) with `preferred_model` parameter support.
+  - Added REST endpoint `GET /api/audio/status` reporting operational metrics, discovered models, and CUDA acceleration for both ASR and TTS.
+  - Updated `POST /api/voice/transcribe` with optional `model` parameter.
+  - Tested: 7/7 tests passing in [`backend/tests/test_audio_pipeline.py`](file:///f:/MAXIM%20V2/backend/tests/test_audio_pipeline.py).
+- **Verification Receipts**:
+  - 394/394 backend Pytest unit tests passing (100% Green, 0 errors).
+  - 24/24 frontend Vitest tests passing (100% Green).
+  - Frontend production build (`tsc && vite build`) passing cleanly in 2.84s.
+
+---
+
+## 5. Current System Status
+- **Hardware Profile**: NVIDIA GeForce RTX 4050 Laptop GPU (6GB GDDR6 VRAM, ~5.2GB usable for AI after Windows DWM).
+- **Execution Model**: Single heavy model "Hot Seat" policy in local GPU VRAM with dynamic hardware governor parameters.
+- **Verification Baseline**:
+  - All unit test suites 100% green (394 Pytest tests, 24 Vitest tests).
+  - Active daemons: Port 8000 (FastAPI), Port 5173 (Vite), Port 8080 (llama-server CUDA) healthy.
+
+
+
+
+
+
+

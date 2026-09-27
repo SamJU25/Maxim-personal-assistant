@@ -1,0 +1,19 @@
+{
+  "name": "claude-skills",
+  "version": "1.0.0",
+  "description": "Unified Claude Skills and Agent catalog integrating 500+ curated skills and 100+ agents from Alireza Rezvani and Jeff Allan ecosystems without workspace bloat.",
+  "author": "MaxIM Agent Integration",
+  "total_skills": 439,
+  "total_agents": 116,
+  "domains": [
+    "ai-ml",
+    "backend-api",
+    "database-storage",
+    "devops-cloud",
+    "engineering",
+    "executive-advisory",
+    "frontend-ui",
+    "productivity-ops",
+    "testing-security"
+  ]
+}

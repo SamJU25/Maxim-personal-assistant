@@ -1,0 +1,62 @@
+# Python Virtual Environments & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node, Frontend & Production Builds
+node_modules/
+dist/
+dist-ssr/
+*.local
+.npm/
+
+# Database Files, Runtime State & Personal Session History
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+maxim.db
+backend/maxim.db
+backend/maxim.db-wal
+backend/maxim.db-shm
+
+# Secret Credentials & Environment Variables
+.env
+.env.*
+*.env
+!.env.example
+*.pem
+*.key
+*.cert
+*.p12
+
+# Local Large Model Weights (Keep folder layout via .gitkeep and README.md)
+models/**/*.gguf
+models/*.gguf
+models/**/*.GGUF
+models/*.GGUF
+models/**/*.bin
+models/*.bin
+models/**/*.safetensors
+models/**/*.onnx
+models/**/*.pt
+models/**/*.pth
+models/**/*.wav
+!models/**/.gitkeep
+!models/**/README.md
+!models/.gitkeep
+!models/README.md
+
+# Operating System & IDE Logs
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+.idea/
+.vscode/

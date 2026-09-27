@@ -1,0 +1,10 @@
+{
+  "id": "openjarvis_bridge",
+  "name": "OpenJarvis Execution Bridge",
+  "version": "1.0.0",
+  "description": "Capsule adapter bridging Stanford OpenJarvis multimodal grounding and proactive agent telemetry.",
+  "author": "Stanford OpenJarvis / MaxIM Adaptation",
+  "homepage": "https://github.com/openjarvis/openjarvis",
+  "intent_triggers": ["jarvis", "openjarvis", "ironman", "protocol", "mark_liv", "grounding"],
+  "enabled": true
+}
